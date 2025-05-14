@@ -1,0 +1,1 @@
+export const GATEWAY_HTTP = Symbol('GATEWAY_HTTP');

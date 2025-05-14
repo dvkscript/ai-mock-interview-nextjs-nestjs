@@ -1,0 +1,24 @@
+{
+  "greetings": [
+    "Xin chào! Tôi là {name}, {title}. Rất vui được gặp bạn hôm nay.",
+    "Chào mừng bạn đến với buổi phỏng vấn! Tôi là {name}, {title}.",
+    "Xin chào và cảm ơn bạn đã tham gia buổi phỏng vấn ngày hôm nay. Tôi là {name}, {title}."
+  ],
+  "questions": [
+    "Chúng ta sẽ tiến hành phỏng vấn cho vị trí {position} ở cấp độ {level}. Trước khi bắt đầu, bạn có thể giới thiệu ngắn gọn về bản thân và kinh nghiệm của mình không?",
+    "Bạn có thể cho tôi biết về một dự án khó khăn bạn đã làm việc và cách bạn giải quyết những thách thức đó không?",
+    "Hãy nói về kỹ năng kỹ thuật của bạn. Bạn có kinh nghiệm gì với các công nghệ và framework chính trong lĩnh vực này?",
+    "Hãy thảo luận về cách bạn đối phó với áp lực và thời hạn công việc gấp. Bạn có thể chia sẻ một ví dụ cụ thể không?",
+    "Tôi muốn hỏi về kinh nghiệm làm việc nhóm của bạn. Bạn thích làm việc trong một nhóm như thế nào và vai trò của bạn thường là gì?",
+    "Hãy nói về mục tiêu nghề nghiệp dài hạn của bạn. Bạn thấy mình ở đâu trong 3-5 năm tới?"
+  ],
+  "feedback": [
+    "Cảm ơn bạn đã chia sẻ thông tin.",
+    "Đó là một kinh nghiệm thú vị.",
+    "Cảm ơn về câu trả lời của bạn.",
+    "Đó là một câu trả lời tốt."
+  ],
+  "closing": [
+    "Cảm ơn bạn đã tham gia phỏng vấn ngày hôm nay. Tôi đã có đủ thông tin để đánh giá. Bạn có thể xem kết quả đánh giá chi tiết dưới đây."
+  ]
+}

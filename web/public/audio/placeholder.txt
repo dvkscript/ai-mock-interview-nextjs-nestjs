@@ -1,0 +1,6 @@
+Thư mục này chứa các file âm thanh mẫu cho ứng dụng phỏng vấn AI.
+Các file âm thanh cần bao gồm:
+- greeting.mp3: Lời chào từ người phỏng vấn
+- first-question.mp3: Câu hỏi đầu tiên
+- answer-1.mp3 đến answer-5.mp3: Các câu trả lời mẫu
+- goodbye.mp3: Lời kết thúc cuộc phỏng vấn
