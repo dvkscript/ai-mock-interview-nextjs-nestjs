@@ -8,9 +8,9 @@ import DetailedFeedback from "./_components/DetailedFeedback";
 import ActionButtons from "./_components/ActionButtons";
 
 interface PageProps {
-    params: {
+    params: Promise<{
         id: string;
-    }
+    }>
 }
 
 const Page: React.FC<PageProps> = async ({

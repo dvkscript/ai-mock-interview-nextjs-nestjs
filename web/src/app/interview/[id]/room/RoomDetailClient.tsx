@@ -70,7 +70,9 @@ const RoomDetailClient: React.FC<RoomDetailClientProps> = ({
 
     // Interview states
     const [interviewStatus, setInterviewStatus] = useState<"waiting" | "in-progress" | "completed">("waiting");
-    const [interviewer, setInterviewer] = useState<Interviewer>(interviewers["default"]);
+    const [interviewer, 
+        // setInterviewer
+    ] = useState<Interviewer>(interviewers["default"]);
     const [isStarted, setStarted] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
 
@@ -79,7 +81,9 @@ const RoomDetailClient: React.FC<RoomDetailClientProps> = ({
     const [isMuted, setIsMuted] = useState(false);
     const [isSpeaking, setIsSpeaking] = useState(false);
     const [isUserSpeaking, setIsUserSpeaking] = useState(false);
-    const [elapsedTime, setElapsedTime] = useState(0);
+    const [elapsedTime, 
+        // setElapsedTime
+    ] = useState(0);
 
     // Feedback states
     const [isLoading, setIsLoading] = useState(false);

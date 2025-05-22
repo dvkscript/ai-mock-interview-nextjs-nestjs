@@ -3,11 +3,11 @@ import React from "react"
 import UserClient from "./UserClient";
 
 interface UserPageProps {
-  searchParams: {
+  searchParams: Promise<{
     limit?: string;
     page?: string;
     q?: string;
-  }
+  }>
 }
 
 const UserPage: React.FC<UserPageProps> = async ({

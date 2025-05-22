@@ -1,7 +1,7 @@
 "use client"
 import React, { useState, useEffect } from 'react';
 import { categories, getCategoryIcon, getFeedbackCategoryColor } from '../utils';
-import { QuestionType } from '@/lib/api/enum/question-type';
+import { QuestionType } from '@/lib/api/Types/job';
 
 interface CategoryFeedbackListProps {
   categoryFeedbacks: {

@@ -2,7 +2,7 @@ import { getJobs } from "@/actions/job.action";
 import HistoryClient from "./HistoryClient"
 
 type HistoryPageProps = {
-    searchParams: Record<string, string | string[] | undefined>
+    searchParams: Promise<Record<string, string | string[] | undefined>>
 }
 
 const limit = 10;

@@ -3,9 +3,9 @@ import React from "react"
 import PayClient from "./PayClient";
 
 interface PageProps { 
-  params: {
+  params: Promise<{
     id: string;
-  },
+  }>,
 }
 
 const Page: React.FC<PageProps> = async ({

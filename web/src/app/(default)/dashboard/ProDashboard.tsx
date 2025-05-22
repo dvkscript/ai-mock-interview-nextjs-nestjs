@@ -5,7 +5,7 @@ import JobCard from './_components/JobCard';
 import AddInterviewModal from './_components/AddInterviewModal';
 import Hero from './_components/Hero';
 import { Button } from '@/components/ui/button';
-import { CircleX, Plus, TriangleAlert } from 'lucide-react';
+import { Plus, TriangleAlert } from 'lucide-react';
 
 interface ProDashboardProps {
     data: GetJobAnalysis;

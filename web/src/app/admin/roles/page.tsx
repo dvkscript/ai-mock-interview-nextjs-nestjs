@@ -2,8 +2,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import { MoreHorizontal, Search, Plus, Shield, Users, Settings, FileText, MessageSquare } from "lucide-react"
+import { MoreHorizontal, Search, Plus, Shield } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -59,16 +58,16 @@ const roles = [
   },
 ]
 
-const permissionIcons = {
-  "Quản lý người dùng": Users,
-  "Quản lý nội dung": FileText,
-  "Quản lý phỏng vấn": FileText,
-  "Quản lý phản hồi": MessageSquare,
-  "Quản lý cài đặt": Settings,
-  "Xem nội dung": FileText,
-  "Tạo phỏng vấn": FileText,
-  "Gửi phản hồi": MessageSquare,
-}
+// const permissionIcons = {
+//   "Quản lý người dùng": Users,
+//   "Quản lý nội dung": FileText,
+//   "Quản lý phỏng vấn": FileText,
+//   "Quản lý phản hồi": MessageSquare,
+//   "Quản lý cài đặt": Settings,
+//   "Xem nội dung": FileText,
+//   "Tạo phỏng vấn": FileText,
+//   "Gửi phản hồi": MessageSquare,
+// }
 
 export default function RolesPage() {
   return (
@@ -128,7 +127,7 @@ export default function RolesPage() {
                     <TableCell>{role.description}</TableCell>
                     <TableCell>{role.users}</TableCell>
                     <TableCell>
-                      <div className="flex flex-wrap gap-2">
+                      {/* <div className="flex flex-wrap gap-2">
                         {role.permissions.map((permission) => {
                           const Icon = permissionIcons[permission]
                           return (
@@ -138,7 +137,7 @@ export default function RolesPage() {
                             </Badge>
                           )
                         })}
-                      </div>
+                      </div> */}
                     </TableCell>
                     <TableCell>
                       <DropdownMenu>

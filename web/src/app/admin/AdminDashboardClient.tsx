@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { BarChart3, Users, MessageSquare, FileText, TrendingUp, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 import { useUserStore } from "@/stores/userStore";
-import { ChartAreaInteractive } from "./chart-area-interactive";
 import { UserStatistics } from "./_components/UserStatistics";
 
 const stats = [
@@ -63,7 +62,9 @@ const recentActivities = [
     },
 ];
 
-interface AdminDashboardClientProps { }
+interface AdminDashboardClientProps { 
+    children?: React.ReactNode;
+}
 
 const AdminDashboardClient: React.FC<AdminDashboardClientProps> = ({ }) => {
     const profile = useUserStore(state => state.profile);

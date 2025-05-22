@@ -104,9 +104,9 @@ export default function UserClient() {
                     </TableCell>
                     <TableCell>
                       <Badge
-                        variant={user.status === "active" ? "success" : "destructive"}
+                        variant={user.status === "active" ? "success" : "destructive" as any}
                       >
-                        {user.status === "active" ? "Hoạt động" : "Không hoạt động"}
+                        {user.status === "active" ? "Hoạt động" : "Không hoạt động" as any}
                       </Badge>
                     </TableCell>
                     <TableCell>{user.lastLogin}</TableCell>

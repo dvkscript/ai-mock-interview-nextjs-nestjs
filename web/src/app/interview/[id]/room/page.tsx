@@ -4,9 +4,9 @@ import RoomDetailClient from "./RoomDetailClient";
 import Link from "next/link";
 
 interface PageProps {
-    params: {
+    params: Promise<{
         id: string
-    }
+    }>
 }
 
 const Page: React.FC<PageProps> = async ({

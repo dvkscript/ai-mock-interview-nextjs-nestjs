@@ -3,9 +3,7 @@ import Container from '@/components/common/Container';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { BarChart, LineChart, PieChart, TrendingUp, Award, Target, Clock } from 'lucide-react';
+import { LineChart, PieChart, TrendingUp, Award, Target, Clock } from 'lucide-react';
 
 const mockData = {
   overallScore: 85,
