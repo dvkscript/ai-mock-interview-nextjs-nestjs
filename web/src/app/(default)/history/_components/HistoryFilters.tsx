@@ -13,11 +13,40 @@ import { motion } from "framer-motion"
 
 interface HistoryFiltersProps {
   onSearch: (value: string) => void
-  onTimeFilter: (value: string) => void
+  onExperienceFilter: (value: string) => void
   onScoreFilter: (value: string) => void
+  values: {
+    search: string
+    experienceFilter: string
+    scoreFilter: string
+  }
+  onSubmit: () => void
 }
 
-export function HistoryFilters({ onSearch, onTimeFilter, onScoreFilter }: HistoryFiltersProps) {
+const experienceFilterOptions = [
+  { value: "all", label: "Tất cả" },
+  { value: "0", label: "Không có kinh nghiệm" },
+  { value: "1", label: "1 năm kinh nghiệm" },
+  { value: "2", label: "2 năm kinh nghiệm" },
+  { value: "3", label: "3 năm kinh nghiệm" },
+  { value: "4", label: "4 năm kinh nghiệm" },
+  { value: "5+", label: "5+ năm kinh nghiệm trở lên" },
+]
+
+const scoreFilterOptions = [
+  { value: "all", label: "Tất cả" },
+  { value: "excellent", label: "Xuất sắc (90-100)" },
+  { value: "good", label: "Tốt (70-89)" },
+  { value: "average", label: "Trung bình (50-69)" },
+  { value: "poor", label: "Yếu (0-49)" }
+];
+
+export function HistoryFilters({ onSearch, onExperienceFilter, onScoreFilter, values, onSubmit }: HistoryFiltersProps) {
+  const selectValidate = (value: string, options: { value: string, label: string }[]) => {
+    const option = options.find(option => option.value === value)
+    return option ? option.value : "all"
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: -20 }}
@@ -31,33 +60,41 @@ export function HistoryFilters({ onSearch, onTimeFilter, onScoreFilter }: Histor
           placeholder="Tìm kiếm vị trí..."
           className="pl-8"
           onChange={(e) => onSearch(e.target.value)}
+          value={values.search}
         />
       </div>
       <div className="flex gap-2">
-        <Select onValueChange={onTimeFilter}>
+        <Select
+          onValueChange={onExperienceFilter}
+          value={selectValidate(values.experienceFilter, experienceFilterOptions)}
+        >
           <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Thời gian" />
+            <SelectValue placeholder="Năm kinh nghiệm" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Tất cả</SelectItem>
-            <SelectItem value="today">Hôm nay</SelectItem>
-            <SelectItem value="week">Tuần này</SelectItem>
-            <SelectItem value="month">Tháng này</SelectItem>
+            {experienceFilterOptions.map((option) => {
+              return (
+                <SelectItem value={option.value} key={option.value}>{option.label}</SelectItem>
+              )
+            })}
           </SelectContent>
         </Select>
-        <Select onValueChange={onScoreFilter}>
+        <Select
+          onValueChange={onScoreFilter}
+          value={selectValidate(values.scoreFilter, scoreFilterOptions)}
+        >
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Điểm số" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Tất cả</SelectItem>
-            <SelectItem value="excellent">Xuất sắc (90-100)</SelectItem>
-            <SelectItem value="good">Tốt (70-89)</SelectItem>
-            <SelectItem value="average">Trung bình (50-69)</SelectItem>
-            <SelectItem value="poor">Yếu (0-49)</SelectItem>
+            {scoreFilterOptions.map((option) => {
+              return (
+                <SelectItem value={option.value} key={option.value}>{option.label}</SelectItem>
+              )
+            })}
           </SelectContent>
         </Select>
-        <Button variant="outline" size="icon">
+        <Button variant="outline" size="icon" onClick={onSubmit}>
           <Filter className="h-4 w-4" />
         </Button>
       </div>

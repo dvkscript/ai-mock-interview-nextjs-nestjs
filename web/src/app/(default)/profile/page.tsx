@@ -6,9 +6,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Camera, Mail, Phone, MapPin, Briefcase, GraduationCap, Award } from 'lucide-react';
+import { Camera, Mail, Phone, MapPin } from 'lucide-react';
+import { useUserStore } from '@/stores/userStore';
 
 export default function ProfilePage() {
+  const profile = useUserStore(s => s.profile);
+
   return (
     <div className="py-6 sm:px-6 lg:px-8 pt-20 md:pt-6">
       <Container className="max-w-7xl mx-auto px-4 sm:px-0">
@@ -29,8 +32,10 @@ export default function ProfilePage() {
                 <div className="flex flex-col items-center">
                   <div className="relative">
                     <Avatar className="w-32 h-32">
-                      <AvatarImage src="/placeholder-avatar.jpg" alt="User avatar" />
-                      <AvatarFallback>JD</AvatarFallback>
+                      <AvatarImage src={profile?.thumbnail} alt="User avatar" />
+                      <AvatarFallback>
+                        {profile?.fullName.charAt(0).toUpperCase()}
+                      </AvatarFallback>
                     </Avatar>
                     <Button
                       size="icon"
@@ -40,14 +45,16 @@ export default function ProfilePage() {
                       <Camera className="h-4 w-4" />
                     </Button>
                   </div>
-                  <h2 className="text-xl font-semibold mt-4">John Doe</h2>
+                  <h2 className="text-xl font-semibold mt-4">
+                    {profile?.fullName}
+                  </h2>
                   <p className="text-gray-500 dark:text-gray-400">Full Stack Developer</p>
                 </div>
 
                 <div className="mt-6 space-y-4">
                   <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
                     <Mail className="h-4 w-4" />
-                    <span>john.doe@example.com</span>
+                    <span>{profile?.email}</span>
                   </div>
                   <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
                     <Phone className="h-4 w-4" />

@@ -20,6 +20,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@nestjs-modules/mailer": "^2.0.2",
     "@nestjs/axios": "^4.0.0",
     "@nestjs/common": "^11.0.1",
     "@nestjs/core": "^11.0.1",
@@ -28,20 +29,25 @@
     "@nestjs/platform-express": "^11.0.1",
     "@nestjs/swagger": "^11.2.0",
     "@types/bcrypt": "^5.0.2",
+    "@types/nodemailer": "^6.4.17",
     "@types/passport-github2": "^1.2.9",
     "@types/passport-google-oauth20": "^2.0.16",
     "@types/passport-jwt": "^4.0.1",
     "@types/passport-local": "^1.0.38",
     "@types/sequelize": "^4.28.20",
+    "@types/stripe": "^8.0.416",
     "axios": "^1.8.4",
     "bcrypt": "^5.1.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
+    "dayjs": "^1.11.13",
     "dotenv": "^16.4.7",
     "env-var": "^7.5.0",
     "esm": "^3.2.25",
     "express-session": "^1.18.1",
+    "handlebars": "^4.7.8",
     "log4js": "^6.9.1",
+    "nodemailer": "^7.0.3",
     "passport": "^0.7.0",
     "passport-github2": "^0.1.12",
     "passport-google-oauth20": "^2.0.0",
@@ -53,7 +59,8 @@
     "sequelize": "^6.37.7",
     "sequelize-cli": "^6.6.2",
     "sequelize-typescript": "^2.1.6",
-    "stacktrace-js": "^2.0.2"
+    "stacktrace-js": "^2.0.2",
+    "stripe": "^18.1.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",

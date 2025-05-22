@@ -1,4 +1,4 @@
-import { QuestionType } from '@/lib/api/enum/question-type';
+import { QuestionType } from '@/lib/api/Types/job';
 import React from 'react';
 
 export const categories = {
@@ -11,18 +11,18 @@ export const categories = {
 
 
 export function getGradeLabel(score: number): string {
-  if (score >= 90) return "Xuất sắc";
-  if (score >= 80) return "Tốt";
-  if (score >= 70) return "Khá";
-  if (score >= 60) return "Trung bình";
+  if (score >= 9) return "Xuất sắc";
+  if (score >= 8) return "Tốt";
+  if (score >= 7) return "Khá";
+  if (score >= 6) return "Trung bình";
   return "Cần cải thiện";
 }
 
 export function getGradeColor(score: number): string {
-  if (score >= 90) return "text-emerald-500";
-  if (score >= 80) return "text-blue-500";
-  if (score >= 70) return "text-violet-500";
-  if (score >= 60) return "text-yellow-500";
+  if (score >= 9) return "text-emerald-500";
+  if (score >= 8) return "text-blue-500";
+  if (score >= 7) return "text-violet-500";
+  if (score >= 6) return "text-yellow-500";
   return "text-red-500";
 }
 

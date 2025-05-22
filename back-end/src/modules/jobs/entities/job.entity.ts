@@ -105,5 +105,5 @@ export class JobEntity extends Model<JobEntity> {
     questions: JobQuestionEntity[];
 
     @HasOne(() => JobFeedbackEntity, { as: 'feedback', foreignKey: 'jobId' })
-    feedback: JobQuestionEntity[];
+    feedback: JobFeedbackEntity;
 }

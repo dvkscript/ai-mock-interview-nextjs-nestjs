@@ -1,4 +1,5 @@
 "use client";
+import ClientOnly from "@/components/common/ClientOnly";
 import Loading from "@/components/common/Loading";
 import { useRouter } from "next-nprogress-bar";
 import Link from "next/link";
@@ -17,14 +18,16 @@ const Page = () => {
     }, [message, router]);
 
     return (
-        <div>
-            <Loading />
-            <Link href={"./"}
-                className="text-black/80 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full size-16 flex justify-center items-center font-bold"
-            >
-                Home
-            </Link>
-        </div>
+        <ClientOnly>
+            <div>
+                <Loading />
+                <Link href={"./"}
+                    className="text-black/80 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full size-16 flex justify-center items-center font-bold"
+                >
+                    Home
+                </Link>
+            </div>
+        </ClientOnly>
     );
 };
 

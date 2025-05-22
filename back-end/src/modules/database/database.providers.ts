@@ -15,6 +15,8 @@ import { UserProviderEntity } from '../users/entities/user_provider.entity';
 import { UserProfileEntity } from '../users/entities/user_profile.entity';
 import { RolePermissionEntity } from '../users/entities/role_permission.entity';
 import { BlacklistEntity } from '../auth/entities/blacklist';
+import { UserTemporaryPermissionEntity } from '../users/entities/users_temporary_permissions';
+import { PayEntity } from '../pay/entities/pay.entity';
 
 export const databaseProviders = [
     {
@@ -36,6 +38,8 @@ export const databaseProviders = [
                 UserProviderEntity,
                 UserProfileEntity,
                 BlacklistEntity,
+                UserTemporaryPermissionEntity,
+                PayEntity
             ]);
             await sequelize.sync();
             return sequelize;

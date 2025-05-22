@@ -9,6 +9,7 @@ import envConfig from 'src/configs/env.config';
 import { ProfileOAuthDto } from './dto/profile-Oauth.dto';
 import { AuthGuard } from './auth.guard';
 import { RefreshTokenInputDto } from './dto/refresh-token.input.dto';
+import { PermissionsGuard } from '../users/guards/permissions.guard';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -125,7 +126,7 @@ export class AuthController {
     type: ProfileResponseDto
   })
   @ApiResponse({ status: 401, description: 'Không có quyền truy cập' })
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, PermissionsGuard)
   @Get('profile')
   getProfile(@Request() req): ProfileResponseDto {
     return req.user;

@@ -6,12 +6,13 @@ import { HttpExceptionFilter } from './libs/api/filters/http-exception.filter';
 import { JobsModule } from './modules/jobs/jobs.module';
 import { SharedModule } from './modules/shared/shared.module';
 import { DatabaseModule } from './modules/database/database.module';
-import { InterviewsModule } from './modules/interviews/interviews.module';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { PayModule } from './modules/pay/pay.module';
+import { AdminModule } from './modules/admin/admin.module';
 
 @Module({
-  imports: [JobsModule, SharedModule, DatabaseModule, InterviewsModule, UsersModule, AuthModule],
+  imports: [JobsModule, SharedModule, DatabaseModule, UsersModule, AuthModule, PayModule, AdminModule],
   controllers: [],
   providers: [
     {
@@ -31,5 +32,6 @@ import { AuthModule } from './modules/auth/auth.module';
       useClass: HttpExceptionFilter,
     },
   ],
+  exports: [],
 })
 export class AppModule {}

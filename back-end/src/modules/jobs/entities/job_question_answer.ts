@@ -22,7 +22,7 @@ export class JobQuestionAnswerEntity extends Model<JobQuestionAnswerEntity> {
     jobQuestionId: string;
 
     @Column({
-        type: DataType.STRING,
+        type: DataType.STRING(5000),
         allowNull: false,
     })
     content: string;

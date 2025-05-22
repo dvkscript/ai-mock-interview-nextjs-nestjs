@@ -5,6 +5,9 @@ import { DatabaseService } from "src/modules/database/database.service";
 import { Inject } from "@nestjs/common";
 import { SEQUELIZE } from "src/modules/database/database.di-tokens";
 import { UserProfileEntity } from "../entities/user_profile.entity";
+import { RoleEntity } from "../entities/role.entity";
+import { UsersRolesParamsDto } from "../dto/users-roles-params";
+import { Op } from "sequelize";
 
 export class UserRepository extends RepositoryBase<UserEntity> {
     constructor(
@@ -52,6 +55,47 @@ export class UserRepository extends RepositoryBase<UserEntity> {
                 transaction: options?.transaction
             });
             return [newUser, true];
+        })
+    }
+
+    async getUsersRoles(params: UsersRolesParamsDto) {
+        const page = params.page || 1;
+        const limit = params.limit || 10;
+        const offset = (page - 1) * limit;
+        const q = params.q || '';
+
+
+
+        return await this.findAndCountAll({
+            where: {
+                [Op.or]: [
+                    {
+                        email: {
+                            [Op.like]: `%${q}%`
+                        }
+                    },
+                    {
+                        fullName: {
+                            [Op.like]: `%${q}%`
+                        }
+                    }
+                ],
+            },
+            include: [
+                {
+                    model: RoleEntity,
+                    required: false
+                },
+                {
+                    model: UserProfileEntity,
+                    required: false
+                }
+            ],
+            offset,
+            limit,
+            order: [
+                ['id', 'DESC']
+            ],
         })
     }
 }

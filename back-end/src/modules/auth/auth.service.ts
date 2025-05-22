@@ -33,7 +33,7 @@ export class AuthService {
 
       const tokens = {
         accessToken: this.generateAccessToken(user.id),
-        refreshToken: this.generateRefreshToken(user.id),
+        refreshToken: this.generateRefreshToken(),
       }
 
       const createToken = await this.userService.createToken({
@@ -63,8 +63,9 @@ export class AuthService {
   generateAccessToken(userId: string) {
     return this.jwtService.sign({ userId });
   }
-  generateRefreshToken(userId: string) {
-    return this.jwtService.sign({ userId }, {
+  generateRefreshToken() {
+    const data = Math.random() + new Date().getTime();
+    return this.jwtService.sign({ data }, {
       expiresIn: this.configService.jwtConfig.refreshExpires,
       secret: this.configService.jwtConfig.refreshSecret
     });
@@ -88,6 +89,8 @@ export class AuthService {
     const res = await this.userService.getRefreshToken(refreshToken);
 
     if (!res) {
+      console.log(111111111);
+      
       throw new UnauthorizedException('Invalid token');
     }
 
@@ -97,16 +100,21 @@ export class AuthService {
         this.configService.jwtConfig.refreshSecret
       );
     } catch (error) {
+      console.log(2222222222);
       await this.userService.deleteRefreshToken(res.refreshToken);
       throw new UnauthorizedException('Invalid token');
     }
 
     await this.userService.deleteRefreshToken(res.refreshToken);
 
-    return {
+    const tokens = {
       accessToken: this.generateAccessToken(res.userId),
-      refreshToken: this.generateRefreshToken(res.userId),
-    }
+      refreshToken: this.generateRefreshToken(),
+    };
+
+    await this.userService.createUserToken(tokens.refreshToken, res.userId)
+
+    return tokens
   }
 
   async logout(accessToken: string, expired: Date, refreshToken?: string) {
@@ -130,5 +138,9 @@ export class AuthService {
     return await this.blacklistRepo.delete({
       token
     })
+  }
+
+  getUser(userId: string) {
+    return this.userService.getUser(userId);
   }
 }

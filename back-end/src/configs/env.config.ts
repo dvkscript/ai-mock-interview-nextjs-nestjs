@@ -18,7 +18,10 @@ export default {
         googleClientSecret: get("GOOGLE_CLIENT_SECRET").required().asString(),
         githubClientId: get("GITHUB_CLIENT_ID").required().asString(),
         githubClientSecret: get("GITHUB_CLIENT_SECRET").required().asString(),
-        nodeEnv: get("NODE_ENV").required().asString() // "development" | "production"
+        nodeEnv: get("NODE_ENV").required().asString(), // "development" | "production"
+        stripeSecretKey: get("STRIPE_SECRET_KEY").required().asString(),
+        emailFrom: get("EMAIL_FROM").required().asString(),
+        emailPassword: get("EMAIL_PASSWORD").required().asString(),
     },
     jwt: {
         accessSecret: get('JWT_ACCESS_SECRET').required().asString(),

@@ -2,51 +2,50 @@ import { addDays } from 'date-fns';
 import { NextResponse } from 'next/server'
 import { NextRequest } from 'next/server'
 import { getProfile, getRefreshToken } from './actions/auth.action';
+import { UserRole } from './enums/role';
 
 // This function can be marked `async` if using `await` inside
 export async function middleware(request: NextRequest) {
     const { pathname, searchParams } = request.nextUrl;
     const cookie = request.cookies
+    // const pageLogout = cookie.get("page-logout")?.value || "user"; 
 
     if (pathname.startsWith("/auth")) {
-        if (cookie.get('accessToken')) {
+        if (cookie.get('accessToken')?.value) {
             return NextResponse.redirect(new URL('/dashboard', request.url));
         };
         const accessToken = searchParams.get('accessToken');
         const refreshToken = searchParams.get('refreshToken');
 
-        if (accessToken && refreshToken) {
-            const res = NextResponse.redirect(new URL('/dashboard', request.url));
-            res.cookies.set({
-                expires: addDays(new Date(), 100),
-                name: 'accessToken',
-                value: accessToken
-            })
-            res.cookies.set({
-                name: 'refreshToken',
-                value: accessToken,
-                expires: addDays(new Date(), 100),
-            });
-            return res
+        if (!accessToken || !refreshToken) {
+            return NextResponse.redirect(new URL('/login', request.url));
         }
+        const res = NextResponse.redirect(new URL('/dashboard', request.url));
+        res.cookies.set({
+            expires: addDays(new Date(), 100),
+            name: 'accessToken',
+            value: accessToken
+        })
+        res.cookies.set({
+            name: 'refreshToken',
+            value: refreshToken,
+            expires: addDays(new Date(), 100),
+        });
+        return res
     }
 
-    const { ok, status } = await getProfile();
-    
+    const { ok, status, data } = await getProfile();
+
+
     const refreshToken = cookie.get('refreshToken')?.value;
     const accessToken = cookie.get('accessToken')?.value;
 
-    if (ok) {
-        if (pathname.startsWith("/login") || pathname === "/") {
-            return NextResponse.redirect(new URL('/dashboard', request.url));
-        } 
-    }
-
-    if (pathname.startsWith("/dashboard")) {
-        if (!ok && status === 401) {
-            if (!refreshToken || !accessToken) {
+    if (!ok) {
+        if (status !== 401 || !refreshToken || !accessToken) {
+            if (!pathname.startsWith("/login") && pathname !== "/") {
                 return NextResponse.redirect(new URL('/login', request.url));
             }
+        } else if (refreshToken) {
             const resfresh = await getRefreshToken(refreshToken);
 
             if (!resfresh.ok) {
@@ -68,6 +67,18 @@ export async function middleware(request: NextRequest) {
             });
             return res;
         }
+    } else {
+        if (pathname.startsWith("/login") || pathname === "/") {
+            return NextResponse.redirect(new URL('/dashboard', request.url));
+        }
+        const headers = request.headers;
+        headers.set("x-user-pro", (data?.permissions.includes(UserRole.PRO) || "false").toString());
+        return NextResponse.next({
+            request: {
+                headers
+            }
+        });
+
     }
 }
 

@@ -22,10 +22,18 @@ export const StatusBadgeColor: Record<JobStatus, string> = {
   [JobStatus.NOT_STARTED]: 'bg-gray-100 text-gray-700',
 };
 
+export const StatusBgColor: Record<JobStatus, string> = {
+  [JobStatus.IN_PROGRESS]: 'bg-yellow-500',
+  [JobStatus.COMPLETED]: 'bg-green-500',
+  [JobStatus.REVIEWED]: 'bg-indigo-500',
+  [JobStatus.CANCELLED]: 'bg-red-500',
+  [JobStatus.NOT_STARTED]: 'bg-gray-500',
+};
+
 export function getScoreColor(score: number): string {
-  if (score >= 90) return "text-emerald-500";
-  if (score >= 80) return "text-blue-500";
-  if (score >= 70) return "text-violet-500";
-  if (score >= 60) return "text-yellow-500";
+  if (score >= 9) return "text-emerald-500";
+  if (score >= 8) return "text-blue-500";
+  if (score >= 7) return "text-violet-500";
+  if (score >= 6) return "text-yellow-500";
   return "text-red-500";
 }

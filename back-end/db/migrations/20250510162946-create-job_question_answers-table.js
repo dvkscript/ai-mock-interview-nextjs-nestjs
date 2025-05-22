@@ -19,7 +19,7 @@ module.exports = {
         }
       },
       content: {
-        type: Sequelize.STRING(1000),
+        type: Sequelize.STRING(5000),
         allowNull: false,
       },
       created_at: {

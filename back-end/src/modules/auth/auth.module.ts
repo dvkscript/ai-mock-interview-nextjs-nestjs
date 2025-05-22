@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { PassportModule } from '@nestjs/passport';
@@ -27,7 +27,7 @@ import { BlacklistRepository } from './repositories/blacklist.repository';
         },
       }),
     }),
-    UsersModule
+    forwardRef(() => UsersModule)
   ],
   controllers: [AuthController],
   providers: [
@@ -39,7 +39,7 @@ import { BlacklistRepository } from './repositories/blacklist.repository';
       provide: BLACKLIST_REPOSITORY,
       useClass: BlacklistRepository
     },
-    AuthGuard
+    AuthGuard,
   ],
   exports: [AuthService, AuthGuard],
 })

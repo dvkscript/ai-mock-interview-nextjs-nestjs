@@ -17,7 +17,7 @@ export const getRefreshToken = responseAPI.catchError(
         });
 
         if (!res.data) {
-            return responseAPI.error(res);
+            throw new Error("Invalid Server Error")
         }
 
         return responseAPI.success({
@@ -26,13 +26,19 @@ export const getRefreshToken = responseAPI.catchError(
     }
 )
 
+export type GetProfile = {
+    iat: number,
+    exp: number,
+    id: string,
+    email: string,
+    fullName: string,
+    token: string,
+    permissions: string[]
+}
+
 export const getProfile = responseAPI.catchError(
     async () => {
-        const res = await defaultApi.get("/auth/profile");
-
-        if (!res.data) {
-            return responseAPI.error(res);
-        }
+        const res = await defaultApi.get<GetProfile | null>("/auth/profile");
 
         return responseAPI.success({
             data: res.data

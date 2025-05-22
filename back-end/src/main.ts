@@ -13,6 +13,8 @@ async function bootstrap() {
     cors: true,
   });
 
+  app.setGlobalPrefix('api');
+
   app.use(
     session({
       secret: 'some-secret',
@@ -33,10 +35,11 @@ async function bootstrap() {
     .setVersion('1.0')
     .addBearerAuth()
     .build();
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
+  const document = SwaggerModule.createDocument(app, config, {
+    ignoreGlobalPrefix: false,
+  });
+  SwaggerModule.setup('docs', app, document);
 
-  app.setGlobalPrefix('api');
 
   // Static assets
   app.useStaticAssets(join(__dirname, '../public', '/'), {

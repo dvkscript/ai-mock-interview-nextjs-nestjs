@@ -1,208 +1,233 @@
 "use client"
+
+import React, { useCallback, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import Container from '@/components/common/Container';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Check, CreditCard, Zap } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import StripeProvider from "@/components/Pay/Stripe/StripeProvider";
+import StripeCard from "@/components/Pay/Stripe/StripeCard";
+import { Stripe, StripeElements } from "@stripe/stripe-js";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next-nprogress-bar";
+import { payUserPro } from "@/actions/pay.action";
+import { toast } from "sonner";
 
 const plans = [
   {
-    name: 'Cơ bản',
-    price: '0',
-    description: 'Dành cho người mới bắt đầu',
+    id: "pro-monthly",
+    name: "Pro Monthly",
+    price: 199000,
+    period: "tháng",
     features: [
-      '5 buổi phỏng vấn mỗi tháng',
-      'Phản hồi cơ bản',
-      'Truy cập tài liệu cơ bản',
-    ],
+      "Tạo không giới hạn buổi phỏng vấn",
+      "Phân tích chi tiết kết quả",
+      "Tùy chỉnh câu hỏi phỏng vấn",
+      "Xuất báo cáo chi tiết",
+      "Hỗ trợ qua email",
+      "Truy cập tất cả template"
+    ]
   },
   {
-    name: 'Chuyên nghiệp',
-    price: '299.000',
-    description: 'Dành cho người đang tìm việc',
+    id: "pro-yearly",
+    name: "Pro Yearly",
+    price: 1990000,
+    period: "năm",
     features: [
-      '20 buổi phỏng vấn mỗi tháng',
-      'Phản hồi chi tiết',
-      'Truy cập tất cả tài liệu',
-      'Phân tích tiến trình',
-      'Hỗ trợ ưu tiên',
+      "Tất cả tính năng của Pro Monthly",
+      "Tiết kiệm 2 tháng",
+      "Ưu tiên hỗ trợ",
+      "Tính năng mới sớm nhất",
+      "Hỗ trợ 24/7",
+      "Tùy chỉnh giao diện"
     ],
-    popular: true,
-  },
-  {
-    name: 'Doanh nghiệp',
-    price: 'Liên hệ',
-    description: 'Dành cho công ty và tổ chức',
-    features: [
-      'Không giới hạn buổi phỏng vấn',
-      'Phản hồi nâng cao',
-      'API truy cập',
-      'Tùy chỉnh câu hỏi',
-      'Quản lý nhiều người dùng',
-      'Hỗ trợ 24/7',
-    ],
-  },
+    popular: true
+  }
 ];
 
 export default function BillingPage() {
+  const searchParams = useSearchParams();
+  const period = searchParams.get("period") || "monthly";
+  const submitBtnRef = useRef<HTMLInputElement | null>(null);
+  const [isStripeLoaded, setIsStripeLoaded] = useState(false);
+  const [
+    errorMsg,
+    setErrorMsg
+  ] = useState<string>();
+  const router = useRouter();
+  const [isLoading, setLoading] = useState(false);
+
+  const filteredPlans = plans.filter(plan =>
+    period === "yearly" ? plan.id === "pro-yearly" : plan.id === "pro-monthly"
+  );
+
+  const handleSubmit = useCallback(async ({ elements, stripe }: { stripe: Stripe, elements: StripeElements }) => {
+    setLoading(true)
+    const [{ error: submitError }, { error: methodError, paymentMethod }] = await Promise.all([
+      elements.submit(),
+      stripe.createPaymentMethod({
+        elements
+      })
+    ]);
+
+    if (submitError || methodError) {
+      setErrorMsg(submitError?.message || methodError?.message);
+      setLoading(false)
+      return
+    };
+
+    const res = await payUserPro(period === "yearly" ? "yearly" : "monthly", paymentMethod.id);
+    if (!res.ok || !res.data) {
+      setLoading(false)
+      return toast.error(res.message)
+    } else {
+      router.push(`/billing/${res.data.id}?period=${res.data.description}`)
+    }
+    setLoading(false)
+  }, [period, router]);
+
   return (
-    <div className="py-6 sm:px-6 lg:px-8 pt-20 md:pt-6">
-      <Container className="max-w-7xl mx-auto px-4 sm:px-0">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 mb-2">
-            Thanh toán
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
+      <Container className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* Header Section */}
+        <div className="text-center mb-10">
+          <h1 className="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600 mb-4">
+            Chọn gói phù hợp với bạn
           </h1>
-          <p className="text-lg text-gray-600 dark:text-gray-300">
-            Chọn gói dịch vụ phù hợp với nhu cầu của bạn
+          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+            Nâng cấp tài khoản của bạn để trải nghiệm đầy đủ tính năng và tối ưu hóa quá trình phỏng vấn
           </p>
         </div>
 
-        {/* Pricing Plans */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          {plans.map((plan) => (
-            <Card
-              key={plan.name}
-              className={`relative ${
-                plan.popular
-                  ? 'border-blue-500 dark:border-blue-400 shadow-lg'
-                  : ''
-              }`}
+        {/* Period Toggle */}
+        <div className="flex justify-center mb-10">
+          <div className="inline-flex rounded-xl border border-gray-200 p-1 bg-white shadow-sm">
+            <button
+              onClick={() => {
+                router.push("/billing?period=monthly")
+              }}
+              className={`px-6 py-3 cursor-pointer rounded-lg text-sm font-medium transition-all duration-200 ${period === "monthly"
+                ? "bg-purple-600 text-white shadow-sm"
+                : "text-gray-600 hover:text-gray-900"
+                }`}
             >
-              {plan.popular && (
-                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                  <span className="bg-blue-500 text-white text-xs font-medium px-3 py-1 rounded-full">
-                    Phổ biến nhất
-                  </span>
-                </div>
-              )}
-              <CardHeader>
-                <CardTitle>{plan.name}</CardTitle>
-                <CardDescription>{plan.description}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="mb-6">
-                  <span className="text-3xl font-bold">
-                    {plan.price === '0' ? 'Miễn phí' : `${plan.price}đ`}
-                  </span>
-                  {plan.price !== '0' && plan.price !== 'Liên hệ' && (
-                    <span className="text-gray-500 dark:text-gray-400">/tháng</span>
-                  )}
-                </div>
-                <ul className="space-y-3 mb-6">
-                  {plan.features.map((feature) => (
-                    <li key={feature} className="flex items-center gap-2">
-                      <Check className="h-4 w-4 text-green-500" />
-                      <span className="text-sm">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-                <Button
-                  className="w-full"
-                  variant={plan.popular ? 'default' : 'outline'}
-                >
-                  {plan.price === 'Liên hệ' ? 'Liên hệ' : 'Chọn gói'}
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
+              Thanh toán hàng tháng
+            </button>
+            <button
+              onClick={() => {
+                router.push("/billing?period=yearly");
+              }}
+              className={`px-6 py-3 cursor-pointer rounded-lg text-sm font-medium transition-all duration-200 relative ${period === "yearly"
+                ? "bg-purple-600 text-white shadow-sm"
+                : "text-gray-600 hover:text-gray-900"
+                }`}
+            >
+              Thanh toán hàng năm
+              <span className="ml-2 px-2 py-0.5 text-xs bg-green-100 text-green-800 rounded-full absolute text-nowrap left-2/3 -translate-x-1/2 bottom-5/6">
+                Tiết kiệm 20%
+              </span>
+            </button>
+          </div>
         </div>
 
-        {/* Payment Form */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Thanh toán</CardTitle>
-            <CardDescription>
-              Điền thông tin thanh toán của bạn
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form className="space-y-6">
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="firstName">Họ</Label>
-                    <Input id="firstName" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="lastName">Tên</Label>
-                    <Input id="lastName" />
-                  </div>
+        <div className="flex flex-col md:flex-row gap-8 max-w-6xl mx-auto">
+          {/* Payment Form */}
+          <Card className="max-w-4xl py-0 w-full mx-auto mb-16">
+            <CardContent className="p-8">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-8 text-center">
+                Thông tin thanh toán
+              </h2>
+              <div className="flex flex-col justify-between">
+                <div className="flex-1 min-h-[280px]">
+                  <StripeProvider>
+                    <StripeCard
+                      onSubmit={handleSubmit}
+                      errorMsg={errorMsg}
+                      onLoaded={(isLoaded) => {
+                        setIsStripeLoaded(isLoaded);
+                      }}
+                    >
+                      <input type="submit" hidden style={{ display: "none", opacity: 0, visibility: "hidden" }} ref={submitBtnRef} />
+                    </StripeCard>
+                  </StripeProvider>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input id="email" type="email" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="cardNumber">Số thẻ</Label>
-                  <Input id="cardNumber" placeholder="1234 5678 9012 3456" />
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="expiry">Ngày hết hạn</Label>
-                    <Input id="expiry" placeholder="MM/YY" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="cvc">CVC</Label>
-                    <Input id="cvc" placeholder="123" />
-                  </div>
-                </div>
+                {
+                  isStripeLoaded && (
+                    <Button
+                      onClick={() => {
+                        submitBtnRef.current?.click();
+                      }}
+                      type="button"
+                      disabled={isLoading}
+                      className="relative w-full mt-5 py-6 text-lg font-medium bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white"
+                    >
+                      {
+                        isLoading ? "Đang thanh toán..." : "Thanh toán ngay"
+                      }
+                    </Button>
+                  )
+                }
               </div>
+            </CardContent>
+          </Card>
+          {/* Pricing Plans */}
+          <div className="w-3xl mx-auto mb-16">
+            {filteredPlans.map((plan) => (
+              <Card
+                key={plan.id}
+                className={`relative py-1 overflow-hidden border-2 transition-all duration-300 hover:shadow-xl ${plan.popular
+                  ? "border-purple-500 shadow-lg"
+                  : "border-gray-200 hover:border-purple-300"
+                  }`}
+              >
+                {plan.popular && (
+                  <div className="absolute top-0 right-0 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-2 text-sm font-medium rounded-bl-lg">
+                    Phổ biến nhất
+                  </div>
+                )}
+                <CardContent className="p-8">
+                  <div className="text-center mb-8">
+                    <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+                      {plan.name}
+                    </h3>
+                    <div className="flex items-center justify-center space-x-2">
+                      <span className="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">
+                        {`${plan.price.toLocaleString("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        })}`}
+                      </span>
+                      <span className="text-gray-500 dark:text-gray-400 text-lg">
+                        /{plan.period}
+                      </span>
+                    </div>
+                  </div>
 
-              <div className="space-y-4">
-                <Label>Phương thức thanh toán</Label>
-                <RadioGroup defaultValue="card" className="grid grid-cols-3 gap-4">
-                  <div>
-                    <RadioGroupItem
-                      value="card"
-                      id="card"
-                      className="peer sr-only"
-                    />
-                    <Label
-                      htmlFor="card"
-                      className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
-                    >
-                      <CreditCard className="mb-3 h-6 w-6" />
-                      Thẻ tín dụng
-                    </Label>
-                  </div>
-                  <div>
-                    <RadioGroupItem
-                      value="momo"
-                      id="momo"
-                      className="peer sr-only"
-                    />
-                    <Label
-                      htmlFor="momo"
-                      className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
-                    >
-                      <Zap className="mb-3 h-6 w-6" />
-                      MoMo
-                    </Label>
-                  </div>
-                  <div>
-                    <RadioGroupItem
-                      value="bank"
-                      id="bank"
-                      className="peer sr-only"
-                    />
-                    <Label
-                      htmlFor="bank"
-                      className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
-                    >
-                      <CreditCard className="mb-3 h-6 w-6" />
-                      Chuyển khoản
-                    </Label>
-                  </div>
-                </RadioGroup>
-              </div>
+                  <ul className="space-y-4 mb-8">
+                    {plan.features.map((feature, index) => (
+                      <li key={index} className="flex items-center space-x-3">
+                        <svg className="w-6 h-6 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span className="text-gray-600 dark:text-gray-300 text-lg">{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
 
-              <Button className="w-full">Thanh toán</Button>
-            </form>
-          </CardContent>
-        </Card>
-      </Container>
-    </div>
+        {/* Footer Note */}
+        <div className="mt-8 text-center">
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            Bạn có thể hủy gói bất kỳ lúc nào. Hoàn tiền trong 14 ngày nếu không hài lòng.
+          </p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+            Cần hỗ trợ? Liên hệ với chúng tôi tại <a href="mailto:support@example.com" className="text-purple-600 hover:text-purple-700">support@example.com</a>
+          </p>
+        </div>
+      </Container >
+    </div >
   );
 } 

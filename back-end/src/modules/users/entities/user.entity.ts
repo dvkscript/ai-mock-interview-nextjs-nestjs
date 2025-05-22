@@ -6,6 +6,8 @@ import { UserPermissionEntity } from "./user_permission.entity";
 import { UserTokenEntity } from "./user_tokens.entity";
 import { UserProviderEntity } from "./user_provider.entity";
 import { UserProfileEntity } from "./user_profile.entity";
+import { UserTemporaryPermissionEntity } from "./users_temporary_permissions";
+import { PayEntity } from "src/modules/pay/entities/pay.entity";
 
 @Table({
     tableName: 'users',
@@ -61,6 +63,13 @@ export class UserEntity extends Model<UserEntity> {
     @BelongsToMany(() => PermissionEntity, () => UserPermissionEntity)
     permissions: PermissionEntity[];
 
+    @HasMany(() => UserTemporaryPermissionEntity, {
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+        as: "temporaryPermissions"
+    })
+    temporaryPermissions: UserTemporaryPermissionEntity[];
+
     @HasMany(() => UserTokenEntity, {
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
@@ -81,4 +90,7 @@ export class UserEntity extends Model<UserEntity> {
         as: "profile"
     })
     profile: UserProfileEntity;
+
+    @HasMany(() => PayEntity)
+    pays: PayEntity[];
 }

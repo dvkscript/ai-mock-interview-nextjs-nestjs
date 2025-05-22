@@ -13,9 +13,9 @@ interface UpgradeModalProps {
 
 const plans = [
   {
-    id: "pro-monthly",
+    id: "monthly",
     name: "Pro Monthly",
-    price: "199.000đ",
+    price: 199000,
     period: "tháng",
     features: [
       "Tạo không giới hạn buổi phỏng vấn",
@@ -25,9 +25,9 @@ const plans = [
     ]
   },
   {
-    id: "pro-yearly",
+    id: "yearly",
     name: "Pro Yearly",
-    price: "1.990.000đ",
+    price: 1990000,
     period: "năm",
     features: [
       "Tất cả tính năng của Pro Monthly",
@@ -42,7 +42,7 @@ const plans = [
 export function UpgradeModal({ isOpen, onClose, onUpgrade }: UpgradeModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-4xl">
+      <DialogContent className="sm:max-w-4xl" aria-describedby="modal-description">
         <DialogHeader>
           <DialogTitle className="text-3xl font-bold text-center text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">
             Nâng cấp tài khoản của bạn
@@ -51,11 +51,10 @@ export function UpgradeModal({ isOpen, onClose, onUpgrade }: UpgradeModalProps) 
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8 md:px-4">
           {plans.map((plan) => (
-            <Card 
+            <Card
               key={plan.id}
-              className={`relative overflow-hidden border-2 transition-all duration-300 hover:border-purple-500 ${
-                plan.popular ? "border-purple-500" : "border-gray-200"
-              }`}
+              className={`relative overflow-hidden border-2 transition-all duration-300 hover:border-purple-500 ${plan.popular ? "border-purple-500" : "border-gray-200"
+                }`}
             >
               {plan.popular && (
                 <div className="absolute top-0 right-0 bg-purple-500 text-white px-4 py-1 text-sm font-medium rounded-bl-lg">
@@ -69,7 +68,10 @@ export function UpgradeModal({ isOpen, onClose, onUpgrade }: UpgradeModalProps) 
                   </h3>
                   <div className="flex items-center justify-center space-x-1">
                     <span className="text-3xl font-bold text-gray-900 dark:text-white">
-                      {plan.price}
+                      {`${plan.price.toLocaleString("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      })}`}
                     </span>
                     <span className="text-gray-500 dark:text-gray-400">
                       /{plan.period}
@@ -90,11 +92,10 @@ export function UpgradeModal({ isOpen, onClose, onUpgrade }: UpgradeModalProps) 
 
                 <Button
                   onClick={() => onUpgrade(plan.id)}
-                  className={`w-full py-6 text-lg ${
-                    plan.popular
+                  className={`w-full py-6 text-lg ${plan.popular
                       ? "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
                       : "bg-gray-900 hover:bg-gray-800"
-                  } text-white`}
+                    } text-white`}
                 >
                   Chọn gói {plan.name}
                 </Button>

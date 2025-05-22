@@ -1,3 +1,4 @@
+import ClientOnly from '@/components/common/ClientOnly'
 import Container from '@/components/common/Container'
 import Icons from '@/components/common/Icons'
 import Link from 'next/link'
@@ -5,7 +6,7 @@ import React from 'react'
 
 const layout = ({ children }: { children: React.ReactNode }) => {
     return (
-        <>
+        <ClientOnly>
             <header className="sticky top-0 z-50 w-full backdrop-blur-md bg-white/80 dark:bg-gray-950/90 border-b border-blue-100/50 dark:border-blue-900/30 shadow-md dark:shadow-gray-900/20">
                 <Container className="max-w-7xl mx-auto flex h-16 items-center justify-between px-4 sm:px-6 relative">
                     {/* Decorative elements */}
@@ -65,7 +66,7 @@ const layout = ({ children }: { children: React.ReactNode }) => {
             <main>
                 {children}
             </main>
-        </>
+        </ClientOnly>
     )
 }
 

@@ -1,7 +1,6 @@
 "use server"
-import { QuestionType } from "@/lib/api/enum/question-type";
 import responseAPI from "@/lib/api/response.api";
-import { Job, JobQuestionAnswer, JobWithQuestion } from "@/lib/api/Types/job";
+import { Job, JobQuestionAnswer, JobWithQuestion, QuestionType } from "@/lib/api/Types/job";
 import defaultApi from "@/lib/axios/default";
 import { TCreateAnswer } from "@/lib/validators/create-answer.validator";
 import { TGenerateQuestion } from "@/lib/validators/generate-question.validator";
@@ -107,7 +106,7 @@ export const feedback = responseAPI.catchError(
     }
 )
 
-export type getJobAndCountAll = {
+export type GetJobAndCountAll = {
     count: number;
     rows: (Job & {
         feedback: ({
@@ -119,9 +118,48 @@ export type getJobAndCountAll = {
 export const getJobs = responseAPI.catchError(
     async (searchParams?: { limit?: number, page?: number }) => {
 
-        const res = await defaultApi.get<getJobAndCountAll | null>("/jobs", {
+        const res = await defaultApi.get<GetJobAndCountAll | null>("/jobs", {
             params: searchParams
         });
+        if (!res.data) {
+            throw new Error("Get Jobs failed")
+        }
+        return responseAPI.success({
+            data: res.data
+        })
+    }
+)
+
+export const deleteJob = responseAPI.catchError(
+    async (id: string) => {
+        const res = await defaultApi.delete(`/jobs/${id}`)
+        
+        return responseAPI.success({
+            data: res.data
+        });
+    }
+)
+
+export type GetJobAnalysis = {
+    count: number;
+    rows: (Job & {
+        feedback: ({
+            id: string
+        } | null)
+    })[];
+    avgScore: number;
+    completedCount: number;
+    notCompletedCount: number;
+}
+
+
+export const getJobAnalysis = responseAPI.catchError(
+    async (searchParams?: { limit?: number, page?: number }) => {
+
+        const res = await defaultApi.get<GetJobAnalysis | null>("/jobs/analysis", {
+            params: searchParams
+        });
+
         if (!res.data) {
             throw new Error("Get Jobs failed")
         }

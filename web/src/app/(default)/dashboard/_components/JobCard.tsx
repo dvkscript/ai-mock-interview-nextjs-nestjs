@@ -1,19 +1,15 @@
 "use client"
-import { getJobAndCountAll } from "@/actions/job.action";
+import { GetJobAndCountAll } from "@/actions/job.action";
 import { Badge } from "@/components/ui/badge";
 import { JobStatus } from "@/lib/api/Types/job";
 import { StatusBadgeColor, StatusText, getScoreColor } from "@/lib/utils";
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
-import "dayjs/locale/vi";
 import Link from "next/link";
 import React from "react"
-
-dayjs.extend(relativeTime);
-dayjs.locale("vi");
+import { Play } from "lucide-react";
+import dayjs from "@/lib/utils/dayjs"
 
 interface JobCardProps {
-    job: getJobAndCountAll["rows"][number]
+    job: GetJobAndCountAll["rows"][number]
 }
 
 const JobCard: React.FC<JobCardProps> = ({
@@ -46,7 +42,7 @@ const JobCard: React.FC<JobCardProps> = ({
                         </Link>
                     )}
                     <Link
-                        href={`/${job.id}/room`}
+                        href={`/interview/${job.id}/room`}
                         className="flex-1 inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 transition-colors shadow-sm"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -62,16 +58,14 @@ const JobCard: React.FC<JobCardProps> = ({
             return (
                 <>
                     <Link
-                        href={`/${job.id}/room`}
+                        href={`/interview/${job.id}/room`}
                         className="flex-1 inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 transition-colors shadow-sm"
                     >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                        </svg>
+                        <Play size={16} className="mr-1.5" />
                         Tiếp tục
                     </Link>
                     <Link
-                        href={`/${job.id}/room`}
+                        href={`/interview/${job.id}/room`}
                         className="flex-1 inline-flex justify-center items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-lg text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -85,7 +79,7 @@ const JobCard: React.FC<JobCardProps> = ({
 
         return (
             <Link
-                href={`/${job.id}/room`}
+                href={`/interview/${job.id}/room`}
                 className="flex-1 inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 transition-colors shadow-sm"
             >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

@@ -43,7 +43,7 @@ const AddInterviewModal: React.FC<AddInterviewModalProps> = ({
             if (!res.ok) {
                 toast.error(res.message)
             } else {
-                router.push(`/${res.data.id}/room`)
+                router.push(`/interview/${res.data.id}/room`)
             }
         })
     }
@@ -51,7 +51,7 @@ const AddInterviewModal: React.FC<AddInterviewModalProps> = ({
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="sm:max-w-[425px]" aria-describedby='dialog-description'>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)}>
                         <DialogHeader>

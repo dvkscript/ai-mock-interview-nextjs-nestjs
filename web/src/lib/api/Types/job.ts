@@ -6,6 +6,14 @@ export enum JobStatus {
     NOT_STARTED = 'not_started',
 }
 
+export enum QuestionType {
+    TECHNICAL = 'technical',
+    SITUATION = 'situation',
+    MINDSET = 'mindset',
+    CULTURAL = 'cultural',
+    CONVERSATIONAL = 'conversational',
+}
+
 export interface JobQuestionAnswer {
     id: string;
     content: string;
@@ -15,7 +23,7 @@ export interface JobQuestionAnswer {
 
 export interface JobQuestion {
     id: string;
-    type: string;
+    type: QuestionType;
     question: string;
     required: boolean;
     note?: string;

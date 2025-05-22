@@ -5,7 +5,7 @@ import { JOB_FEEDBACK_REPOSITORY, JOB_QUESTION_ANSWER_REPOSITORY, JOB_QUESTION_R
 import { JobRepository } from './repositories/job.respository';
 import { CreateJobRequestDto } from './dto/create-job.request.dto';
 import { GatewayHttpService } from '../shared/http/gateway-http.service';
-import { FeedBackDataPrompt, generateFeedbackDefaultPrompt, generateFeedbackPrompt, generateQuestionDefaultPrompt, generateQuestionPrompt, QuestionDataPrompt } from './job.prompt';
+import { FeedBackDataPrompt, generateFeedbackPrompt, generateQuestionDefaultPrompt, generateQuestionPrompt, QuestionDataPrompt } from './job.prompt';
 import { extractJSONBlock, safeParseJSON } from 'src/libs/utils/json';
 import { StatusCode } from 'src/libs/exceptions/codes.exception';
 import { FindJobQuestionResponse } from './dto/query/find-job_quesion.reponse';
@@ -17,6 +17,8 @@ import { JobStatus } from '../shared/enum/job-status';
 import { UpdateJobInputDto } from './dto/input/update-job.input.dto';
 import { groupBy, mapValues } from 'src/libs/utils/lodash';
 import { JobFeedbackRepository } from './repositories/job_feedback.repository';
+import { PaginationDto } from './dto/query/pagination.dto';
+import { GenerateTextContentDto } from '../shared/http/dto/generateTextContent.dto';
 
 @Injectable()
 export class JobsService {
@@ -164,25 +166,40 @@ export class JobsService {
             })
         }
 
-        const questions = groupBy(job.questions, (f) => f.type)
+        const textPrompts: GenerateTextContentDto[] = []
 
-        const data = {
+        job.questions.sort((a, b) => a.index - b.index).forEach(question => {
+            const anwer = question.answer;
+
+            textPrompts.push({
+                role: "model",
+                parts: [
+                    {
+                        text: `[${question.type}-${question.required.toString()}]: ${question.question}`
+                    }
+                ]
+            });
+
+            if (anwer) {
+                textPrompts.push({
+                    role: "user",
+                    parts: [
+                        {
+                            text: anwer.content
+                        }
+                    ]
+                });
+            }
+        })
+
+
+
+        const feedbackRes = await this.gatewayHttpService.generateText(generateFeedbackPrompt({
             position: job.position,
             description: job.description,
             yearsOfExperience: job.yearsOfExperience,
-            questions: mapValues(questions, (items) => (
-                items.map(({ question, answer, required }) => {
-                    if (required && !answer) {
-                        throw new Error("Unanswered question")
-                    }
-
-                    return { question, required, answer: answer?.content || null }
-                })
-            ))
-        };
-
-        const text = generateFeedbackPrompt(data)
-        const feedbackRes = await this.gatewayHttpService.generateText(text, "gemini", generateFeedbackDefaultPrompt);
+            questions: [] as any
+        }), "gemini", textPrompts);
 
         if (!feedbackRes) {
             throw new Error("Generate feedback failed");
@@ -204,7 +221,7 @@ export class JobsService {
 
         return await this.databaseService.transaction(async (t) => {
             const averageScore = (feedbackParse.evaluationByCriteria.reduce((sum, item) => sum + item.score, 0) / feedbackParse.evaluationByCriteria.length);
-            
+
             const [[feedback, created]] = await Promise.all([
                 this.jobFeedbackRepository.findOneCreate({
                     jobId: id,
@@ -253,9 +270,66 @@ export class JobsService {
         };
     }
 
-    async getJobs(userId: string, params: Record<string, any>) {
+    async getJobs(userId: string, params: PaginationDto) {
         const jobs = await this.jobRepository.getJobAndCountAll(params, userId);
 
         return jobs;
+    }
+
+    async deleteJob(id: string) {
+        return await this.databaseService.transaction(async (transaction) => {
+            const job = await this.jobRepository.getJobIncludes(id);
+
+            if (!job) return null;
+
+            const questions = job.questions;
+
+            const deletePromise: any[] = []
+
+            if (questions.length > 0) {
+                const answerId = questions.map(item => item.answer?.id).filter(i => i);
+                await this.jobQuestionAnswerRepository.delete({
+                    id: answerId
+                }, {
+                    transaction
+                });
+                deletePromise.push(
+                    this.jobQuestionRepository.delete({
+                        jobId: job.id
+                    }, {
+                        transaction
+                    })
+                );
+                const audioId = questions.map(item => item.audioId);
+                deletePromise.push(
+                    this.gatewayHttpService.deleteFile(audioId)
+                )
+            }
+            if (job.feedback) {
+                deletePromise.push(
+                    this.jobFeedbackRepository.delete({
+                        id: job.feedback.id
+                    }, {
+                        transaction
+                    })
+                )
+            }
+            await Promise.all(deletePromise);
+
+            const res = await this.jobRepository.delete({
+                id
+            }, {
+                transaction
+            });
+
+            if (!res) return null;
+
+            return {
+                id
+            }
+        })
+    }
+    async getAnalysis(userId: string, params: PaginationDto) {
+        return await this.jobRepository.getJobAnalysis(params, userId);
     }
 }

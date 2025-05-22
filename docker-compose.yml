@@ -1,0 +1,44 @@
+version: '3.8'
+services:
+  db:
+    container_name: db-AI-Mock-Interview
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: khoakkkk
+      POSTGRES_DB: db_ai_mock_interview
+    ports:
+      - "5433:5432"
+  api:
+    container_name: api
+    build:
+      context: ./back-end
+      dockerfile: docker/Dockerfile
+    depends_on:
+        - db
+    volumes:
+      - ./back-end:/app
+    env_file:
+      - ./back-end/.env.development.local
+    ports:
+      - "8001:8001"
+    environment:
+      - PORT=8001
+    command: bun run start:dev
+    
+  font-end:
+    container_name: font-end
+    build:
+      context: ./web
+      dockerfile: docker/Dockerfile
+    depends_on:
+        - api
+    volumes:
+      - ./web:/app
+    env_file:
+      - ./api-upload/.env.development.local
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+    command: bun dev

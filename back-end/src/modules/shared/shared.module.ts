@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-import { ConfigService } from './config/config.service';
 import { HttpModule } from './http/http.module';
+import { MailModule } from './mail/mail.module';
+import { ConfigModule } from './config/config.module';
 
 @Module({
-  imports: [HttpModule],
-  providers: [ConfigService],
-  exports: [ConfigService, HttpModule]
+  imports: [HttpModule, MailModule, ConfigModule],
+  exports: [ConfigModule, HttpModule, MailModule]
 })
 export class SharedModule {}

@@ -3,6 +3,7 @@ import { UserPermissionEntity } from "./user_permission.entity";
 import { RolePermissionEntity } from "./role_permission.entity";
 import { UserEntity } from "./user.entity";
 import { RoleEntity } from "./role.entity";
+import { UserTemporaryPermissionEntity } from "./users_temporary_permissions";
 
 @Table({
     tableName: 'permissions',
@@ -43,4 +44,11 @@ export class PermissionEntity extends Model<PermissionEntity> {
 
     @BelongsToMany(() => RoleEntity, () => RolePermissionEntity)
     roles: RoleEntity[];
+
+    @HasMany(() => UserTemporaryPermissionEntity, {
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+        as: "temporaryUsers"
+    })
+    temporaryUsers: UserTemporaryPermissionEntity[];
 }

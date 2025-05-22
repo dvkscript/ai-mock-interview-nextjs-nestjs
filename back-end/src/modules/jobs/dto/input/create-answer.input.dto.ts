@@ -6,6 +6,6 @@ export class CreateAnswerInputDto {
 
     @IsString()
     @MinLength(1)
-    @MaxLength(500)
+    @MaxLength(5000)
     answer: string;
 }

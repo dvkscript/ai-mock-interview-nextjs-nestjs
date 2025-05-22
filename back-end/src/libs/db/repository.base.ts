@@ -1,5 +1,5 @@
 import { isUUID } from "class-validator";
-import { CreateOptions, DestroyOptions, Filterable, FindAndCountOptions, FindOptions, Identifier, ModelStatic, NonNullFindOptions, Transaction, UpdateOptions } from "sequelize";
+import { Attributes, CountOptions, CreateOptions, DestroyOptions, Filterable, FindAndCountOptions, FindOptions, Identifier, ModelStatic, NonNullFindOptions, Transaction, UpdateOptions } from "sequelize";
 import { Model } from "sequelize-typescript";
 
 export abstract class RepositoryBase<T extends Model> {
@@ -58,4 +58,16 @@ export abstract class RepositoryBase<T extends Model> {
     findAndCountAll(condition?: FindAndCountOptions<T>) {
         return this.model.findAndCountAll(condition);
     }
+
+
+    count(
+        where: CountOptions<Attributes<T>>['where'],
+        options?: Omit<CountOptions<Attributes<T>>, 'where' | 'group'>
+    ) {
+        return this.model.count({
+            ...options,
+            where,
+        });
+    }
+
 }

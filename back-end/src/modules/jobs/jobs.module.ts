@@ -8,6 +8,7 @@ import { SharedModule } from '../shared/shared.module';
 import { JobQuestionAnswerRepository } from './repositories/job_question_answer.repository';
 import { DatabaseModule } from '../database/database.module';
 import { JobFeedbackRepository } from './repositories/job_feedback.repository';
+import { AuthModule } from '../auth/auth.module';
 
 const providers = [
   {
@@ -29,7 +30,7 @@ const providers = [
 ]
 
 @Module({
-  imports: [SharedModule, DatabaseModule],
+  imports: [SharedModule, DatabaseModule, AuthModule],
   controllers: [JobsController],
   providers: [
     ...providers,
