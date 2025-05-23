@@ -22,7 +22,7 @@ export class UserTokenEntity extends Model<UserTokenEntity>  {
 
     @ForeignKey(() => UserEntity)
     @Column({
-        type: DataType.STRING,
+        type: DataType.UUID,
         allowNull: false,
         field: 'user_id',
     })

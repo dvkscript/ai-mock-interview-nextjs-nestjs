@@ -218,13 +218,18 @@ const RecentInterviewsSection = ({ jobs }: { jobs: FreeUserDashboardProps["jobs"
                     }
 
                     {
-                      interview.status === JobStatus.IN_PROGRESS && (
+                      (interview.status === JobStatus.IN_PROGRESS || interview.status === JobStatus.NOT_STARTED) && (
                         <Link
                           href={`/interview/${interview.id}/room`}
                           className="flex-1 w-full inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 transition-colors shadow-sm"
                         >
                           <Play size={16} className="mr-1.5" />
-                          Tiếp tục
+                          {
+                            interview.status === JobStatus.NOT_STARTED && "Bắt đầu"
+                          }
+                          {
+                            interview.status === JobStatus.IN_PROGRESS && "Tiếp tục"
+                          }
                         </Link>
                       )
                     }

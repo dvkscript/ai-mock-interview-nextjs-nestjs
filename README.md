@@ -1,5 +1,7 @@
 # AI Mock Interview
 
+# Vui lòng liên hệ với tôi mở API dịch vụ để có thể test web. Cám ơn vì đã đọc!
+
 ## 1. Giới thiệu
 
 AI Mock Interview là một ứng dụng web hiện đại được thiết kế để giúp người dùng thực hành và cải thiện kỹ năng phỏng vấn của mình. Ứng dụng sử dụng công nghệ AI tiên tiến để tạo ra trải nghiệm phỏng vấn thực tế, nơi người dùng có thể:
