@@ -12,8 +12,6 @@ interface ProDashboardProps {
 }
 
 export default async function ProDashboard({ data }: ProDashboardProps) {
-    console.log(data);
-
     const { count, rows, avgScore, completedCount, notCompletedCount } = data;
 
 

@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -40,6 +40,14 @@ const plans = [
 ];
 
 export function UpgradeModal({ isOpen, onClose, onUpgrade }: UpgradeModalProps) {
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    return () => {
+      setIsLoading(false);
+    }
+  }, []);
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-4xl" aria-describedby="modal-description">
@@ -91,13 +99,19 @@ export function UpgradeModal({ isOpen, onClose, onUpgrade }: UpgradeModalProps) 
                 </ul>
 
                 <Button
-                  onClick={() => onUpgrade(plan.id)}
+                  onClick={() => {
+                    onUpgrade(plan.id);
+                    setIsLoading(true);
+                  }}
                   className={`w-full py-6 text-lg ${plan.popular
-                      ? "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
-                      : "bg-gray-900 hover:bg-gray-800"
+                    ? "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                    : "bg-gray-900 hover:bg-gray-800"
                     } text-white`}
+                  disabled={isLoading}
                 >
-                  Chọn gói {plan.name}
+                  {
+                    isLoading ? "Loading..." : `Chọn gói ${plan.name}`
+                  }
                 </Button>
               </CardContent>
             </Card>

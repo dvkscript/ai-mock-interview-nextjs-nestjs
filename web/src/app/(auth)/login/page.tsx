@@ -6,21 +6,24 @@ import { motion } from "framer-motion"
 import Link from "next/link"
 import Icons from "@/components/common/Icons"
 import { AuthProvider } from "@/enums/provider"
-import { useRouter } from "next-nprogress-bar"
+// import { useRouter } from "next-nprogress-bar"
 import { loginSocial } from "@/actions/auth.action"
 import { toast } from "sonner"
 import { useSearchParams } from "next/navigation"
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const router = useRouter();
+  // const router = useRouter();
   const searchParams = useSearchParams();
   const message = searchParams.get("message");
 
   const handleLogin = async (provider: AuthProvider) => {
     setIsLoading(true);
-    const url = await loginSocial(provider);
-    router.push(url)
+    try {
+      const url = await loginSocial(provider);
+      window.location.href = url;
+      // router.push(url)
+    } catch {}
   }
 
   useEffect(() => {
