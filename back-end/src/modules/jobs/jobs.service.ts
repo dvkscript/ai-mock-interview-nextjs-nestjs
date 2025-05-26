@@ -61,7 +61,8 @@ export class JobsService {
         try {
             const questions = await Promise.all(
                 questionParse.map(async (item) => {
-                    const audio = await this.gatewayHttpService.convertTextToSpeech(item.question)
+                    const audio = await this.gatewayHttpService.convertTextToSpeech(item.question);
+                    console.log("Audio file path:", audio);
                     const uploaded = await this.gatewayHttpService.uploadFile(userId, audio);
                     audioIdUploaded.push(uploaded.id);
                     return {
@@ -82,6 +83,7 @@ export class JobsService {
             }
             return jobRes;
         } catch (error) {
+            console.error("Error creating job:", error);
             if (audioIdUploaded.length > 0) {
                 await this.gatewayHttpService.deleteFile(audioIdUploaded);
             }
