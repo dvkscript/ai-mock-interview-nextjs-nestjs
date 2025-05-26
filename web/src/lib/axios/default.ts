@@ -4,7 +4,7 @@ import { getCookie } from '../utils/cookie';
 
 const defaultApi = axios.create({
   baseURL: envConfig.defaultApi,
-  // timeout: 10000,
+  timeout: 1000000,
   headers: {
     'Content-Type': 'application/json',
   },

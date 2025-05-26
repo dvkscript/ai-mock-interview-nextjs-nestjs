@@ -3,7 +3,7 @@ import axios from 'axios';
 
 const gatewayApi = axios.create({
   baseURL: envConfig.gatewayApi,
-  // timeout: 500000,
+  timeout: 1000000,
   headers: {
     'Content-Type': 'application/json',
   },
