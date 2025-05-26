@@ -14,7 +14,7 @@ RUN bun install
 
 RUN npm install -g @nestjs/cli --save-dev sequelize-cli
 
-RUN npx sequelize-cli db:migrate
+# RUN npx sequelize-cli db:migrate
 
 # Copy phần còn lại
 COPY . .

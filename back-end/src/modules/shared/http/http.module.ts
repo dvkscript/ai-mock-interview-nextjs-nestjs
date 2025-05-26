@@ -5,11 +5,14 @@ import { ConfigService } from "../config/config.service";
 import { GATEWAY_HTTP } from "./http.di-tokens";
 import { GatewayHttpService } from "./gateway-http.service";
 
-    @Module({
-        imports: [
-            HttpModuleDefault
-        ],
-        providers: [GatewayHttpProvider, GatewayHttpService, ConfigService],
-        exports: [GatewayHttpService]
-    })
-    export class HttpModule {}
+@Module({
+    imports: [
+        HttpModuleDefault.register({
+            timeout: 1000000,
+            maxRedirects: 5,
+        })
+    ],
+    providers: [GatewayHttpProvider, GatewayHttpService, ConfigService],
+    exports: [GatewayHttpService]
+})
+export class HttpModule { }

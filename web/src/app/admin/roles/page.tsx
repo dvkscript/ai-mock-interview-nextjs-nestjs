@@ -19,6 +19,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import Link from "next/link"
 
 const roles = [
   {
@@ -79,10 +80,12 @@ export default function RolesPage() {
             Quản lý vai trò và quyền hạn trong hệ thống
           </p>
         </div>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Thêm vai trò
-        </Button>
+        <Link href="/admin/roles/add">
+          <Button>
+            <Plus className="mr-2 h-4 w-4" />
+            Thêm vai trò
+          </Button>
+        </Link>
       </div>
 
       <Card>
@@ -149,7 +152,9 @@ export default function RolesPage() {
                         <DropdownMenuContent align="end">
                           <DropdownMenuLabel>Hành động</DropdownMenuLabel>
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem>Chỉnh sửa</DropdownMenuItem>
+                          <Link href={`/admin/roles/${role.id}/edit`}>
+                            <DropdownMenuItem>Chỉnh sửa</DropdownMenuItem>
+                          </Link>
                           <DropdownMenuItem>Xem chi tiết</DropdownMenuItem>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem className="text-red-600">
