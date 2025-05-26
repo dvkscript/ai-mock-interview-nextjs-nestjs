@@ -59,18 +59,16 @@ export class JobsService {
         const audioIdUploaded: string[] = [];
 
         try {
-            const audios = await Promise.all(
-                questionParse.map(item => this.gatewayHttpService.convertTextToSpeech(item.question))
-            );
             const questions = await Promise.all(
-                questionParse.map(async (item, index) => {
-                    const uploaded = await this.gatewayHttpService.uploadFile(userId, audios[index]);
+                questionParse.map(async (item) => {
+                    const audio = await this.gatewayHttpService.convertTextToSpeech(item.question);
+                    const uploaded = await this.gatewayHttpService.uploadFile(userId, audio);
                     audioIdUploaded.push(uploaded.id);
                     return {
                         ...item,
                         audioUrl: uploaded.url,
                         audioId: uploaded.id
-                    };
+                    }
                 })
             );
             const jobRes = await this.jobRepository.createJob({
@@ -84,7 +82,6 @@ export class JobsService {
             }
             return jobRes;
         } catch (error) {
-            console.error("Error creating job:", error);
             if (audioIdUploaded.length > 0) {
                 await this.gatewayHttpService.deleteFile(audioIdUploaded);
             }
