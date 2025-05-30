@@ -5,30 +5,29 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
-import { useState } from "react";
 import { roleFormData } from "../data"
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
 
 export default function AddRolePage() {
-  const [permissions, setPermissions] = useState<Record<string, boolean>>({})
+  // const [permissions, setPermissions] = useState<Record<string, boolean>>({})
 
-  const togglePermission = (group: string, action?: string) => {
-    if (group === 'admin') {
-      // setPermissions(prev => ({
-      //   ...prev,
-      //   admin: !prev.admin
-      // }))
-    } else if (action) {
-      // setPermissions(prev => ({
-      //   ...prev,
-      //   [group]: {
-      //     ...prev[group],
-      //     [action]: !prev[group][action]
-      //   }
-      // }))
-    }
-  }
+  // const togglePermission = (group: string, action?: string) => {
+  //   if (group === 'admin') {
+  //     // setPermissions(prev => ({
+  //     //   ...prev,
+  //     //   admin: !prev.admin
+  //     // }))
+  //   } else if (action) {
+  //     // setPermissions(prev => ({
+  //     //   ...prev,
+  //     //   [group]: {
+  //     //     ...prev[group],
+  //     //     [action]: !prev[group][action]
+  //     //   }
+  //     // }))
+  //   }
+  // }
 
   return (
     <div className="space-y-6">

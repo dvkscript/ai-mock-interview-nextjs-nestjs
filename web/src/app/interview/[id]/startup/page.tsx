@@ -5,18 +5,18 @@ import React from "react"
 import StartupClient from "./StartupClient";
 
 type StartupPageProps = {
-    params: {
+    params: Promise<{
         id: string;
-    }
+    }>
 }
 
 const StartupPage = async ({
     params
 }: StartupPageProps) => {
     const { id } = await params;
-    
+
     const jobRes = await getJobWithQuestion(id);
-    
+
     const data = jobRes.data;
 
     if (!data) {
