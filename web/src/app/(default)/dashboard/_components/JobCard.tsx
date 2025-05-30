@@ -1,12 +1,15 @@
 "use client"
-import { GetJobAndCountAll } from "@/actions/job.action";
+import { GetJobAndCountAll, reGenerateQuestion } from "@/actions/job.action";
 import { Badge } from "@/components/ui/badge";
 import { JobStatus } from "@/lib/api/Types/job";
 import { StatusBadgeColor, StatusText, getScoreColor } from "@/lib/utils";
 import Link from "next/link";
-import React from "react"
+import React, { useTransition } from "react"
 import { Play } from "lucide-react";
 import dayjs from "@/lib/utils/dayjs"
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next-nprogress-bar";
+import { toast } from "sonner";
 
 interface JobCardProps {
     job: GetJobAndCountAll["rows"][number]
@@ -15,6 +18,8 @@ interface JobCardProps {
 const JobCard: React.FC<JobCardProps> = ({
     job
 }) => {
+    const router = useRouter();
+    const [isPending, startTransition] = useTransition()
     const getTimeDisplay = () => {
         const now = dayjs();
         const created = dayjs(job.createdAt);
@@ -75,6 +80,48 @@ const JobCard: React.FC<JobCardProps> = ({
                     </Link>
                 </>
             );
+        }
+
+        if (job.status === JobStatus.CREATING) {
+            return <>
+                <Link
+                    href={`/interview/${job.id}/startup`}
+                    className="flex-1 inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg bg-yellow-200 transition-colors shadow-sm"
+                >
+                    Đang tạo...
+                </Link>
+            </>
+        }
+
+        if (job.status === JobStatus.CREATE_FAILED) {
+            return <>
+                <Button
+                    variant={"secondary"}
+                    className="w-full"
+                    onClick={() => {
+                        startTransition(async () => {
+                            const res = await reGenerateQuestion(job.id);
+                            if (!res.ok) {
+                                toast.error(res.message);
+                            } else {
+                                router.push(`/interview/${job.id}/startup`)
+                            }
+                        })
+                    }}
+                    disabled={isPending}
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className={`h-4 w-4 mr-1.5 ${isPending ? "animate-spin" : ""}`}
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                    >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    {isPending ? "Đang tạo..." : "Tạo lại"}
+                </Button>
+            </>
         }
 
         return (

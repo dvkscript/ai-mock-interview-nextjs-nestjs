@@ -89,8 +89,6 @@ export class AuthService {
     const res = await this.userService.getRefreshToken(refreshToken);
 
     if (!res) {
-      console.log(111111111);
-      
       throw new UnauthorizedException('Invalid token');
     }
 
@@ -100,7 +98,6 @@ export class AuthService {
         this.configService.jwtConfig.refreshSecret
       );
     } catch (error) {
-      console.log(2222222222);
       await this.userService.deleteRefreshToken(res.refreshToken);
       throw new UnauthorizedException('Invalid token');
     }

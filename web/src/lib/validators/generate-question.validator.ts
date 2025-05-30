@@ -25,10 +25,6 @@ export const GenerateQuestionSchema = z.object({
     }).max(50, {
         message: "Year experience must be at most 50"
     }),
-    // voice: z.string({
-    //     required_error: "Voice is required",
-    //     invalid_type_error: "Voice must be a string"
-    // }),
 })
 
 export type TGenerateQuestion = z.infer<typeof GenerateQuestionSchema>

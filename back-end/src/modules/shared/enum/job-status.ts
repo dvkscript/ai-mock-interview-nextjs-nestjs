@@ -1,7 +1,9 @@
 export enum JobStatus {
-    IN_PROGRESS = 'in_progress',
-    COMPLETED = 'completed',
-    REVIEWED = 'reviewed',
-    CANCELLED = 'cancelled',
-    NOT_STARTED = 'not_started',
+  NOT_STARTED = 'not_started',
+  CREATING = 'creating',    
+  IN_PROGRESS = 'in_progress',
+  COMPLETED = 'completed',
+  REVIEWED = 'reviewed',
+  CANCELLED = 'cancelled',
+  CREATE_FAILED = 'create_failed',      
 }

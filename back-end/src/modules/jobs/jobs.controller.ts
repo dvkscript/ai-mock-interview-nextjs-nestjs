@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post, Put, Query, Req, UseGuards } from '@nestjs/common';
 import { JobsService } from './jobs.service';
 import { CreateJobRequestDto } from './dto/create-job.request.dto';
 import { isUUID } from 'class-validator';
@@ -24,7 +24,7 @@ export class JobsController {
     @Req() req: Request
   ) {
     const user = req.user as any
-    const res = await this.jobsService.createJob(user.id, body);
+    const res = await this.jobsService.createJob(user.id, user.fullName, body);
     return res;
   }
 
@@ -60,6 +60,7 @@ export class JobsController {
     }
 
     const res = await this.jobsService.getJobWithQuestion(jobId);
+    
     return res;
   }
 
@@ -108,11 +109,22 @@ export class JobsController {
 
   @ApiOperation({ summary: 'Xóa job' })
   @ApiResponse({ status: 200, description: 'Xóa job thành công' })
-  @Delete(":id")
-  async deleteJobs(@Param("id") id: string): Promise<{ id: string } | null> {
-    if (!isUUID(id)) {
+  @Delete(":jobId")
+  async deleteJobs(@Param("jobId") jobId: string): Promise<{ id: string } | null> {
+    if (!isUUID(jobId)) {
       throw new NotFoundException()
     }
-    return await this.jobsService.deleteJob(id);
+    return await this.jobsService.deleteJob(jobId);
+  }
+
+  @ApiOperation({ summary: 'Tạo lại bộ câu hỏi' })
+  @ApiResponse({ status: 201, description: 'Tạo lại bộ câu hỏi thành công' })
+  @Patch(":jobId/recreate")
+  async patch(@Param("jobId") jobId: string, @Req() req: Request, @Body() body: { model?: string }) {
+    if (!isUUID(jobId)) {
+      throw new NotFoundException()
+    }
+    const user = req.user as any;
+    return await this.jobsService.reCreateJob(jobId, user.id, user.fullName, body.model)
   }
 }

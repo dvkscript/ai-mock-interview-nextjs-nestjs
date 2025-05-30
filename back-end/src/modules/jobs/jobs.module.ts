@@ -9,6 +9,7 @@ import { JobQuestionAnswerRepository } from './repositories/job_question_answer.
 import { DatabaseModule } from '../database/database.module';
 import { JobFeedbackRepository } from './repositories/job_feedback.repository';
 import { AuthModule } from '../auth/auth.module';
+import { JobListener } from './job.listener';
 
 const providers = [
   {
@@ -35,6 +36,7 @@ const providers = [
   providers: [
     ...providers,
     JobsService,
+    JobListener
   ],
 })
 export class JobsModule { }

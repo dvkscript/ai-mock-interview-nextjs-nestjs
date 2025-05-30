@@ -2,6 +2,8 @@ import { getJobWithQuestion } from "@/actions/job.action";
 import React from "react"
 import RoomDetailClient from "./RoomDetailClient";
 import Link from "next/link";
+import { JobStatus } from "@/lib/api/Types/job";
+import { redirect } from "next/navigation";
 
 interface PageProps {
     params: Promise<{
@@ -18,6 +20,12 @@ const Page: React.FC<PageProps> = async ({
 
     if (!jobs.data) {
         throw new Error(jobs.status.toString())
+    }
+
+    if (jobs.data.status === JobStatus.CREATING) {
+        return redirect(`/interview/${id}/startup`)
+    } else if (jobs.data.status === JobStatus.CREATE_FAILED) {
+        return redirect(`/interview/${id}/error`)
     }
 
     return (

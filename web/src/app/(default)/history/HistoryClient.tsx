@@ -55,6 +55,7 @@ const HistoryClient: React.FC<HistoryClientProps> = ({
     const handleDelete = async (id: string) => {
         const toastId = toast.loading("Đang xóa...");
         const res = await deleteJob(id);
+        
         toast.dismiss(toastId);
         if (!res.ok) {
             toast.error(res.message);

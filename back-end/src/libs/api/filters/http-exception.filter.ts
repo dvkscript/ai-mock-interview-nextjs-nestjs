@@ -12,7 +12,6 @@ export class HttpExceptionFilter implements ExceptionFilter {
         const errors = response.errors || null;
         
         if (!(exception instanceof HttpException)) return;
-        console.log(exception);
         
         response.status(status).json(ResponseBase.fail(
             status,

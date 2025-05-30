@@ -44,7 +44,7 @@ export function HistoryCard({
   const handleDelete = async () => {
     try {
       setIsDeleting(true)
-      await onDelete(id)
+      await onDelete(id);
     } finally {
       setIsDeleting(false)
     }

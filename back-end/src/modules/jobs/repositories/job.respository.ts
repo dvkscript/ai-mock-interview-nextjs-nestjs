@@ -15,17 +15,25 @@ export class JobRepository extends RepositoryBase<JobEntity> {
     }
 
     async createJob(job: CreateJobInputDto) {
-        const res = await this.create(job, {
-            include: {
-                model: JobQuestionEntity,
-                as: "questions",
-                required: true
-            }
+        const res = await this.create({
+            ...job,
         });
         return {
             id: res.id
         };
     }
+    // async createJob(job: CreateJobInputDto) {
+    //     const res = await this.create(job, {
+    //         include: {
+    //             model: JobQuestionEntity,
+    //             as: "questions",
+    //             required: true
+    //         }
+    //     });
+    //     return {
+    //         id: res.id
+    //     };
+    // }
 
     async getJobQuestions(jobId: string): Promise<JobEntity | null> {
         return await this.findByPk(jobId, {
@@ -33,10 +41,11 @@ export class JobRepository extends RepositoryBase<JobEntity> {
             include: [
                 {
                     model: JobQuestionEntity,
-                    required: true,
+                    required: false,
                     include: [
                         {
                             model: JobQuestionAnswerEntity,
+                            required: false,
                         }
                     ]
                 }
@@ -50,15 +59,17 @@ export class JobRepository extends RepositoryBase<JobEntity> {
             include: [
                 {
                     model: JobQuestionEntity,
-                    required: true,
+                    required: false,
                     include: [
                         {
                             model: JobQuestionAnswerEntity,
+                            required: false,
                         },
                     ]
                 },
                 {
                     model: JobFeedbackEntity,
+                    required: false,
                 }
             ]
         })

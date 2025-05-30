@@ -40,8 +40,8 @@ export class CreateJobInputDto {
     @IsUUID()
     userId: string;
 
-    @IsArray()
-    @ValidateNested({ each: true })
-    @Type(() => Questions)
-    questions: Questions[];
+    // @IsArray()
+    // @ValidateNested({ each: true })
+    // @Type(() => Questions)
+    // questions: Questions[];
 }

@@ -1,6 +1,7 @@
 import { isUUID } from "class-validator";
-import { Attributes, CountOptions, CreateOptions, DestroyOptions, Filterable, FindAndCountOptions, FindOptions, Identifier, ModelStatic, NonNullFindOptions, Transaction, UpdateOptions } from "sequelize";
+import { Attributes, BulkCreateOptions, CountOptions, CreateOptions, DestroyOptions, Filterable, FindAndCountOptions, FindOptions, Identifier, ModelStatic, NonNullFindOptions, Transaction, UpdateOptions } from "sequelize";
 import { Model } from "sequelize-typescript";
+import { MakeNullishOptional } from "sequelize/types/utils";
 
 export abstract class RepositoryBase<T extends Model> {
     protected model: ModelStatic<T>;
@@ -70,4 +71,7 @@ export abstract class RepositoryBase<T extends Model> {
         });
     }
 
+    bulkCreate(records: any[], condition?: BulkCreateOptions<Attributes<T>>) {
+        return this.model.bulkCreate(records, condition);
+    }
 }

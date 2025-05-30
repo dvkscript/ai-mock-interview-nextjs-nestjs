@@ -73,7 +73,7 @@ export class JobEntity extends Model<JobEntity> {
 
     @Column({
         type: DataType.ENUM(JobStatus.IN_PROGRESS, JobStatus.COMPLETED, JobStatus.REVIEWED, JobStatus.CANCELLED, JobStatus.NOT_STARTED),
-        defaultValue: JobStatus.NOT_STARTED,
+        defaultValue: JobStatus.CREATING,
         allowNull: false,
     })
     status: JobStatus;

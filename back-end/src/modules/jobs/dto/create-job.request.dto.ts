@@ -13,9 +13,6 @@ export class CreateJobRequestDto {
     yearsOfExperience: number;
 
     @IsString()
-    username: string;
-
-    @IsString()
     @IsOptional()
     model?: string;
 }

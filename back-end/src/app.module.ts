@@ -10,9 +10,12 @@ import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { PayModule } from './modules/pay/pay.module';
 import { AdminModule } from './modules/admin/admin.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
-  imports: [JobsModule, SharedModule, DatabaseModule, UsersModule, AuthModule, PayModule, AdminModule],
+  imports: [
+    EventEmitterModule.forRoot(),
+    JobsModule, SharedModule, DatabaseModule, UsersModule, AuthModule, PayModule, AdminModule],
   controllers: [],
   providers: [
     {

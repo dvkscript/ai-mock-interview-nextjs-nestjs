@@ -43,7 +43,7 @@ const AddInterviewModal: React.FC<AddInterviewModalProps> = ({
             if (!res.ok) {
                 toast.error(res.message)
             } else {
-                router.push(`/interview/${res.data.id}/room`)
+                router.push(`/interview/${res.data.id}/startup`)
             }
         })
     }
@@ -153,7 +153,16 @@ const AddInterviewModal: React.FC<AddInterviewModalProps> = ({
                                                     className="col-span-3"
                                                     placeholder='Nếu chưa có kinh nghiệm thì nhập "0" hoặc bỏ trống'
                                                     disabled={isPending}
-                                                    {...field}
+                                                    {...{
+                                                        ...field,
+                                                        onChange(e) {
+                                                            const value = e.target.value;
+
+                                                            const parsed = value === "" ? undefined : Number(value);
+                                                            field.onChange(parsed);
+                                                        }
+                                                    }}
+
                                                 />
                                             </FormControl>
                                             <FormMessage />
@@ -169,8 +178,8 @@ const AddInterviewModal: React.FC<AddInterviewModalProps> = ({
                                 transition={{ delay: 0.5 }}
                                 className="w-full"
                             >
-                                <Button 
-                                    type="submit" 
+                                <Button
+                                    type="submit"
                                     variant={"primary"}
                                     className="w-full"
                                     disabled={isPending}

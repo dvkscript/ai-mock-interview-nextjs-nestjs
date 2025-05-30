@@ -1,9 +1,11 @@
 export enum JobStatus {
+    NOT_STARTED = 'not_started',
+    CREATING = 'creating',
     IN_PROGRESS = 'in_progress',
     COMPLETED = 'completed',
     REVIEWED = 'reviewed',
     CANCELLED = 'cancelled',
-    NOT_STARTED = 'not_started',
+    CREATE_FAILED = 'create_failed',
 }
 
 export enum QuestionType {

@@ -12,6 +12,8 @@ export const StatusText: Record<JobStatus, string> = {
   [JobStatus.REVIEWED]: 'Đã đánh giá',
   [JobStatus.CANCELLED]: 'Đã hủy',
   [JobStatus.NOT_STARTED]: 'Chưa bắt đầu',
+  [JobStatus.CREATING]: 'Đang tạo...',
+  [JobStatus.CREATE_FAILED]: 'Tạo thất bại...',
 };
 
 export const StatusBadgeColor: Record<JobStatus, string> = {
@@ -20,6 +22,8 @@ export const StatusBadgeColor: Record<JobStatus, string> = {
   [JobStatus.REVIEWED]: 'bg-indigo-100 text-indigo-700',
   [JobStatus.CANCELLED]: 'bg-red-100 text-red-700',
   [JobStatus.NOT_STARTED]: 'bg-gray-100 text-gray-700',
+  [JobStatus.CREATING]: 'bg-yellow-100 text-yellow-700',
+  [JobStatus.CREATE_FAILED]: 'bg-red-100 text-red-700',
 };
 
 export const StatusBgColor: Record<JobStatus, string> = {
@@ -28,6 +32,8 @@ export const StatusBgColor: Record<JobStatus, string> = {
   [JobStatus.REVIEWED]: 'bg-indigo-500',
   [JobStatus.CANCELLED]: 'bg-red-500',
   [JobStatus.NOT_STARTED]: 'bg-gray-500',
+  [JobStatus.CREATING]: 'bg-yellow-500',
+  [JobStatus.CREATE_FAILED]: 'bg-red-500',
 };
 
 export function getScoreColor(score: number): string {

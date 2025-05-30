@@ -19,6 +19,9 @@ import { groupBy, mapValues } from 'src/libs/utils/lodash';
 import { JobFeedbackRepository } from './repositories/job_feedback.repository';
 import { PaginationDto } from './dto/query/pagination.dto';
 import { GenerateTextContentDto } from '../shared/http/dto/generateTextContent.dto';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { JOB_CREATED } from './job.listener';
+import { CreateJobListenerDto } from './dto/input/create-job.listener.dto';
 
 @Injectable()
 export class JobsService {
@@ -33,63 +36,60 @@ export class JobsService {
         private readonly jobFeedbackRepository: JobFeedbackRepository,
         private readonly gatewayHttpService: GatewayHttpService,
         private readonly databaseService: DatabaseService,
+        private readonly eventEmitter: EventEmitter2
     ) { }
 
-    async createJob(userId: string, job: CreateJobRequestDto) {
-        const prompt = generateQuestionPrompt(job);
-        const questionRes = await this.gatewayHttpService.generateText(prompt, job.model, generateQuestionDefaultPrompt);
-        if (!questionRes) {
-            throw new Error("Generate question failed");
-        }
-
-        const questionStr = extractJSONBlock(
-            questionRes.text
-        );
-        if (!questionStr) {
-            throw new HttpException("JSON block not found in the response text", StatusCode.INTERNAL_SERVER_ERROR, {
-                description: "JSON block not found in the response text"
-            })
-        }
-        const questionParse = safeParseJSON<QuestionDataPrompt | null>(questionStr);
-        if (!questionParse) {
-            throw new HttpException("JSON parse error", StatusCode.INTERNAL_SERVER_ERROR, {
-                description: "JSON parse error"
-            })
-        }
-        const audioIdUploaded: string[] = [];
-
-        try {
-            const questions = await Promise.all(
-                questionParse.map(async (item) => {
-                    const audio = await this.gatewayHttpService.convertTextToSpeech(item.question);
-                    const uploaded = await this.gatewayHttpService.uploadFile(userId, audio);
-                    audioIdUploaded.push(uploaded.id);
-                    return {
-                        ...item,
-                        audioUrl: uploaded.url,
-                        audioId: uploaded.id
-                    }
-                })
-            );
-            const jobRes = await this.jobRepository.createJob({
-                ...job,
-                questions,
-                userId
-            })
-
-            if (!jobRes) {
-                throw new Error("Invalid Server Error");
-            }
-            return jobRes;
-        } catch (error) {
-            if (audioIdUploaded.length > 0) {
-                await this.gatewayHttpService.deleteFile(audioIdUploaded);
-            }
-            throw new HttpException(error.message || "Invalid Server error", StatusCode.INTERNAL_SERVER_ERROR, {
-                description: "Create job failed"
-            })
-        }
+    async createJob(userId: string, username: string, job: CreateJobRequestDto) {
+        const jobRes = await this.jobRepository.createJob({
+            ...job,
+            userId,
+        })
+        this.eventEmitter.emit(JOB_CREATED, {
+            ...job,
+            userId,
+            id: jobRes.id,
+            username
+        } as CreateJobListenerDto);
+        return jobRes;
     }
+
+    async reCreateJob(jobId: string, userId: string, username: string, model?: string) {
+        const job = await this.jobRepository.findOne({
+            id: jobId
+        });
+        if (!job) {
+            throw new NotFoundException("Job not found", {
+                description: "Job not found"
+            })
+        }
+        const jobUpdated = await this.jobRepository.update({
+            id: jobId
+        }, {
+            status: JobStatus.CREATING
+        }); 
+
+        if (!jobUpdated) {
+            throw new NotFoundException("Job not found", {
+                description: "Job not found"
+            })
+        };
+
+        const data: CreateJobListenerDto = {
+            userId,
+            id: job.id,
+            description: job.description,
+            position: job.position,
+            yearsOfExperience: job.yearsOfExperience,
+            username,
+            model,
+        }
+
+        this.eventEmitter.emit(JOB_CREATED, data);
+        return {
+            id: job.id
+        };
+    }
+
 
     async getJobWithQuestion(id: string): Promise<FindJobQuestionResponse> {
         const job = await this.jobRepository.getJobQuestions(id);

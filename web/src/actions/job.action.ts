@@ -10,7 +10,6 @@ export const GenerateQuestion = responseAPI.catchError(
     async (body: TGenerateQuestion) => {
         const job = await defaultApi.post("/jobs", {
             ...body,
-            username: "Khoa",
             model: "gemini"
         });
 
@@ -19,6 +18,22 @@ export const GenerateQuestion = responseAPI.catchError(
         }
 
         return responseAPI.success({
+            data: job.data
+        })
+    }
+)
+
+export const reGenerateQuestion = responseAPI.catchError(
+    async (jobId: string) => {
+        const job = await defaultApi.patch("/jobs" + `/${jobId}/recreate`, {
+            model: "gemini"
+        });
+
+        if (!job.data) {
+            throw new Error("Create job failed")
+        }
+
+        return responseAPI.success<{ id: string }>({
             data: job.data
         })
     }
@@ -119,7 +134,7 @@ export const getJobs = responseAPI.catchError(
     async (searchParams?: { limit?: number, page?: number }) => {
 
         const res = await defaultApi.get<GetJobAndCountAll | null>("/jobs", {
-            params: searchParams
+            params: searchParams,
         });
         if (!res.data) {
             throw new Error("Get Jobs failed")
@@ -133,7 +148,7 @@ export const getJobs = responseAPI.catchError(
 export const deleteJob = responseAPI.catchError(
     async (id: string) => {
         const res = await defaultApi.delete(`/jobs/${id}`)
-        
+
         return responseAPI.success({
             data: res.data
         });
