@@ -1,6 +1,6 @@
 import React from "react"
 import LayoutClient from "./LayoutClient";
-import { getUserProfile } from "@/actions/user.action";
+import { getProfile } from "@/actions/auth.action";
 
 interface LayoutProps {
     children: React.ReactNode;
@@ -9,7 +9,7 @@ interface LayoutProps {
 const Layout = async ({
     children
 }: LayoutProps) => {
-    const profileRes = await getUserProfile()
+    const profileRes = await getProfile()
 
     return (
         <LayoutClient profile={profileRes.data}>

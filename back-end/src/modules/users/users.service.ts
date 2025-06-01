@@ -88,19 +88,6 @@ export class UsersService {
         })
     }
 
-    getProfile(userId: string) {
-        return this.userRepository.findOne({
-            id: userId
-        }, {
-            include: [
-                {
-                    model: UserProfileEntity,
-                    required: false,
-                }
-            ]
-        })
-    }
-
     getUser(id: string) {
         return this.userRepository.findByPk(id);
     }
@@ -126,7 +113,7 @@ export class UsersService {
         }, {
             order: [['endTime', 'DESC']],
         });
-        
+
         if (existing) {
             return await this.userTemporaryPermissionRepository.create({
                 permissionId: permission.id,

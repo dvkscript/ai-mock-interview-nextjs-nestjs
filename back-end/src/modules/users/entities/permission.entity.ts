@@ -1,9 +1,9 @@
 import { BelongsToMany, Column, DataType, HasMany, Model, Table } from "sequelize-typescript";
-import { UserPermissionEntity } from "./user_permission.entity";
+import { UserEntity } from "src/modules/users/entities/user.entity";
+import { UserPermissionEntity } from "src/modules/users/entities/user_permission.entity";
+import { UserTemporaryPermissionEntity } from "src/modules/users/entities/users_temporary_permissions";
 import { RolePermissionEntity } from "./role_permission.entity";
-import { UserEntity } from "./user.entity";
 import { RoleEntity } from "./role.entity";
-import { UserTemporaryPermissionEntity } from "./users_temporary_permissions";
 
 @Table({
     tableName: 'permissions',
@@ -20,6 +20,7 @@ export class PermissionEntity extends Model<PermissionEntity> {
     @Column({
         type: DataType.STRING,
         allowNull: false,
+        unique: true
     })
     value: string;
 

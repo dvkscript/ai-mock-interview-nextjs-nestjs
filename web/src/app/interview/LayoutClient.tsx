@@ -1,10 +1,10 @@
 "use client"
-import { GetUserProfile } from "@/actions/user.action";
+import { GetProfile } from "@/actions/auth.action";
 import { useUserStore } from "@/stores/userStore";
 import React, { useEffect } from "react"
 
 interface LayoutClientProps { 
-    profile: GetUserProfile | null;
+    profile: GetProfile | null;
     children: React.ReactNode;
 }
 

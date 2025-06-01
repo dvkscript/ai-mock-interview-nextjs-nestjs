@@ -1,6 +1,6 @@
 import { BelongsTo, BelongsToMany, Column, DataType, ForeignKey, HasMany, HasOne, Model, Table } from "sequelize-typescript";
 import { UserEntity } from "./user.entity";
-import { PermissionEntity } from "./permission.entity";
+import { PermissionEntity } from "src/modules/users/entities/permission.entity";
 
 @Table({
     tableName: 'users_temporary_permissions',

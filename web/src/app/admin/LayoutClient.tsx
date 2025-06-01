@@ -1,5 +1,5 @@
 "use client"
-import { GetUserProfile } from '@/actions/user.action'
+import { GetProfile } from '@/actions/auth.action'
 import ClientOnly from '@/components/common/ClientOnly'
 import { AppSidebar } from '@/components/layout/app-sidebar'
 import { Button } from '@/components/ui/button'
@@ -14,7 +14,7 @@ export default function LayoutClient({
     profile
 }: {
     children: React.ReactNode;
-    profile: GetUserProfile | null;
+    profile: GetProfile | null;
 }) {
     const { setProfile } = useUserStore()
 

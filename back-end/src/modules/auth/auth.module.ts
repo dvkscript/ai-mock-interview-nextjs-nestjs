@@ -12,6 +12,7 @@ import { ConfigService } from '../shared/config/config.service';
 import { AuthGuard } from './auth.guard';
 import { BLACKLIST_REPOSITORY } from './auth.di-tokens';
 import { BlacklistRepository } from './repositories/blacklist.repository';
+import { RolesGuard } from './guards/roles.guard';
 
 @Module({
   imports: [
@@ -27,7 +28,7 @@ import { BlacklistRepository } from './repositories/blacklist.repository';
         },
       }),
     }),
-    forwardRef(() => UsersModule)
+    forwardRef(() => UsersModule),
   ],
   controllers: [AuthController],
   providers: [
@@ -40,7 +41,8 @@ import { BlacklistRepository } from './repositories/blacklist.repository';
       useClass: BlacklistRepository
     },
     AuthGuard,
+    RolesGuard,
   ],
-  exports: [AuthService, AuthGuard],
+  exports: [AuthService, AuthGuard, RolesGuard],
 })
 export class AuthModule { }

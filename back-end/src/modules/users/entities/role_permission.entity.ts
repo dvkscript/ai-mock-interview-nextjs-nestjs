@@ -1,6 +1,6 @@
 import { BelongsToMany, Column, DataType, ForeignKey, HasMany, HasOne, Model, Table } from "sequelize-typescript";
-import { RoleEntity } from "./role.entity";
 import { PermissionEntity } from "./permission.entity";
+import { RoleEntity } from "./role.entity";
 
 @Table({
     tableName: 'roles_permissions',

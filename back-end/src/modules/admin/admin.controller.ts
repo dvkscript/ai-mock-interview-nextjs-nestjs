@@ -1,7 +1,12 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
-// import { AdminService } from './admin.service';
 import { AuthGuard } from '../auth/auth.guard';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { AdminService } from './admin.service';
+import { AdminRole } from '../shared/enum/role';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { CreateRoleInputDto } from './dto/create-role.input.dto';
+import { SearchRoleQueryInput } from '../users/dto/query/search-role.query.input';
 // import { CreateRoleDto } from './dto/create-role.dto';
 // import { UpdateRoleDto } from './dto/update-role.dto';
 // import { CreateUserDto } from './dto/create-user.dto';
@@ -10,11 +15,33 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('admin')
 @UseGuards(AuthGuard)
+// @Roles(AdminRole.AdminAccess)
+// @UseGuards(RolesGuard)
 @Controller('admin')
 export class AdminController {
   constructor(
-    // private readonly adminService: AdminService
+    private readonly adminService: AdminService
   ) {}
+
+  @ApiOperation({ summary: 'Create role' })
+  @ApiResponse({ status: 201, description: 'Create role success' })
+  @Post("/role")
+  async createRole(@Body() body: CreateRoleInputDto) {
+    return await this.adminService.createRole(body);
+  } 
+
+  @ApiOperation({ summary: 'Get role' })
+  @ApiResponse({ status: 200, description: 'Get role success' })
+  @Get("/roles")
+  async getRoleAndCountAll(@Query() searchParams: SearchRoleQueryInput) {
+    const res = await this.adminService.getRoleAndCountAll(searchParams);
+    console.log(res);
+    
+    return res;
+    
+  }
+
+
 
   // @ApiOperation({ summary: 'Lấy danh sách người dùng' })
   // @ApiResponse({ status: 200, description: 'Trả về danh sách người dùng với profile và roles' })

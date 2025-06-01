@@ -1,129 +1,53 @@
-// import { Injectable, NotFoundException } from '@nestjs/common';
-// import { CreateRoleDto } from './dto/create-role.dto';
-// import { UpdateRoleDto } from './dto/update-role.dto';
-// import { CreateUserDto } from './dto/create-user.dto';
-// import { UpdateUserDto } from './dto/update-user.dto';
-// import { PaginationDto } from '../jobs/dto/query/pagination.dto';
-// import * as bcrypt from 'bcrypt';
-// import { Op, fn, col } from 'sequelize';
+import { ConflictException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { PERMISSION_REPOSITORY, ROLE_REPOSITORY } from '../users/user.di-tokens';
+import { RoleRepository } from '../users/repositories/role.repository';
+import { PermissionRepository } from '../users/repositories/permission.repository';
+import { DatabaseService } from '../database/database.service';
+import { CreateRoleInputDto } from './dto/create-role.input.dto';
+import { SearchRoleQueryInput } from '../users/dto/query/search-role.query.input';
 
-// @Injectable()
-// export class AdminService {
-//   constructor(
 
-//   ) {}
+@Injectable()
+export class AdminService {
+    constructor(
+        @Inject(ROLE_REPOSITORY)
+        private readonly roleRepository: RoleRepository,
+        @Inject(PERMISSION_REPOSITORY)
+        private readonly permissionRepository: PermissionRepository,
+        private readonly databaseService: DatabaseService,
+    ) { }
 
-//   async getUsers(paginationDto: PaginationDto) {
-//     const { page = 1, limit = 10 } = paginationDto;
-//     const offset = (page - 1) * limit;
+    async createRole(body: CreateRoleInputDto) {
+        const permissions = await this.permissionRepository.findAll({
+            where: {
+                value: body.permissions
+            }
+        });
 
-//     const { count, rows: users } = await this.userModel.findAndCountAll({
-//       include: [
-//         {
-//           model: Role,
-//           through: { attributes: [] },
-//         },
-//       ],
-//       offset,
-//       limit,
-//     });
+        const newPermissions = body.permissions.filter((p) => !permissions.find(item => item.value === p)).map(p => ({ value: p }));
 
-//     return {
-//       data: users,
-//       total: count,
-//       page,
-//       limit,
-//     };
-//   }
+        return await this.databaseService.transaction(async (transaction) => {
+            const [role, permissions] = await Promise.all([
+                this.roleRepository.create({
+                    name: body.name,
+                }, {
+                    transaction
+                }),
+                this.permissionRepository.bulkCreate(newPermissions, {
+                    transaction
+                })
+            ]);
+            if (!role) {
+                throw new ConflictException('Role already exists');
+            }
 
-//   async createUser(createUserDto: CreateUserDto) {
-//     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
-//     const user = await this.userModel.create({
-//       ...createUserDto,
-//       password: hashedPassword,
-//     });
-//     return user;
-//   }
+            return {
+                id: role.id,
+            }
+        })
+    }
 
-//   async updateUser(id: string, updateUserDto: UpdateUserDto) {
-//     const user = await this.userModel.findByPk(id);
-//     if (!user) {
-//       throw new NotFoundException('User not found');
-//     }
-
-//     if (updateUserDto.password) {
-//       updateUserDto.password = await bcrypt.hash(updateUserDto.password, 10);
-//     }
-
-//     await user.update(updateUserDto);
-//     return user;
-//   }
-
-//   async deleteUser(id: string) {
-//     const user = await this.userModel.findByPk(id);
-//     if (!user) {
-//       throw new NotFoundException('User not found');
-//     }
-//     await user.destroy();
-//     return { id };
-//   }
-
-//   async getRoles(paginationDto: PaginationDto) {
-//     const { page = 1, limit = 10 } = paginationDto;
-//     const offset = (page - 1) * limit;
-
-//     const { count, rows: roles } = await this.roleModel.findAndCountAll({
-//       offset,
-//       limit,
-//     });
-
-//     return {
-//       data: roles,
-//       total: count,
-//       page,
-//       limit,
-//     };
-//   }
-
-//   async createRole(createRoleDto: CreateRoleDto) {
-//     const role = await this.roleModel.create(createRoleDto);
-//     return role;
-//   }
-
-//   async updateRole(id: string, updateRoleDto: UpdateRoleDto) {
-//     const role = await this.roleModel.findByPk(id);
-//     if (!role) {
-//       throw new NotFoundException('Role not found');
-//     }
-
-//     await role.update(updateRoleDto);
-//     return role;
-//   }
-
-//   async deleteRole(id: string) {
-//     const role = await this.roleModel.findByPk(id);
-//     if (!role) {
-//       throw new NotFoundException('Role not found');
-//     }
-//     await role.destroy();
-//     return { id };
-//   }
-
-//   async getAnalysis() {
-//     const [totalRevenue] = await this.payModel.findAll({
-//       attributes: [
-//         [fn('SUM', col('amount')), 'total'],
-//       ],
-//       raw: true,
-//     });
-
-//     const totalUsers = await this.userModel.count();
-//     const totalJobs = await this.jobModel.count();
-
-//     return {
-//       totalRevenue: totalRevenue?.total || 0,
-//       totalUsers,
-//       totalJobs,
-//     };
-//   }
-// }
+    async getRoleAndCountAll(searchParams: SearchRoleQueryInput) {
+        return await this.roleRepository.getRoleAndCountAll(searchParams);
+    }
+}

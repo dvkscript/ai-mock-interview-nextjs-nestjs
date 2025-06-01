@@ -1,10 +1,10 @@
 import { getHeaders } from "@/lib/utils/headers";
 import LayoutClient from "./LayoutClient"
-import { getUserProfile } from "@/actions/user.action"
+import { getProfile } from "@/actions/auth.action";
 
 
 const DefaultLayout = async ({ children }: { children: React.ReactNode }) => {
-    const profileRes = await getUserProfile();
+    const profileRes = await getProfile();
     const isUserPro = await getHeaders("x-user-pro");
     
     return (

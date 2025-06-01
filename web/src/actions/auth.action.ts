@@ -32,8 +32,10 @@ export type GetProfile = {
     id: string,
     email: string,
     fullName: string,
+    thumbnail?: string;
     token: string,
-    permissions: string[]
+    permissions: string[],
+    roles: string[];
 }
 
 export const getProfile = responseAPI.catchError(

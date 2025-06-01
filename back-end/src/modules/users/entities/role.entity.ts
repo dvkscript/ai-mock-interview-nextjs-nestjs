@@ -1,8 +1,8 @@
 import { BelongsToMany, Column, DataType, HasMany, Model, Table } from "sequelize-typescript";
-import { UserRoleEntity } from "./user_role.entity";
-import { RolePermissionEntity } from "./role_permission.entity";
-import { UserEntity } from "./user.entity";
 import { PermissionEntity } from "./permission.entity";
+import { UserEntity } from "src/modules/users/entities/user.entity";
+import { UserRoleEntity } from "src/modules/users/entities/user_role.entity";
+import { RolePermissionEntity } from "./role_permission.entity";
 
 @Table({
     tableName: 'roles',
@@ -19,6 +19,7 @@ export class RoleEntity extends Model<RoleEntity> {
     @Column({
         type: DataType.STRING,
         allowNull: false,
+        unique: true
     })
     name: string;
 

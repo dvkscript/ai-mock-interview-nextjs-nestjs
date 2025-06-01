@@ -7,16 +7,15 @@ import { Button } from '@/components/ui/button'
 import { BellIcon, CreditCardIcon, LogOutIcon, UserCircleIcon, Settings, History, BarChart, HelpCircle, BookOpen, Shield } from 'lucide-react'
 import Link from 'next/link'
 import React, { useCallback, useEffect } from 'react'
-import { logout } from '@/actions/auth.action'
+import { GetProfile, logout } from '@/actions/auth.action'
 import { toast } from 'sonner'
 import { useRouter } from 'next-nprogress-bar'
 import ClientOnly from '@/components/common/ClientOnly'
-import { GetUserProfile } from '@/actions/user.action'
 import { useUserStore } from '@/stores/userStore'
 import { setCookie } from '@/lib/utils/cookie'
 import { redirect, usePathname } from 'next/navigation'
 
-const LayoutClient = ({ children, profile, isUserPro }: { children: React.ReactNode, profile: GetUserProfile | null, isUserPro: boolean }) => {
+const LayoutClient = ({ children, profile, isUserPro }: { children: React.ReactNode, profile: GetProfile | null, isUserPro: boolean }) => {
     const router = useRouter();
     const pathname = usePathname()
 
@@ -44,7 +43,7 @@ const LayoutClient = ({ children, profile, isUserPro }: { children: React.ReactN
             // }
         }
     }, [pathname, isUserPro])
-
+    
     useEffect(() => {
         setProfile(profile)
     }, [profile, setProfile]);

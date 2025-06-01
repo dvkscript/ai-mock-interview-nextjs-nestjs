@@ -5,9 +5,11 @@ import { DatabaseService } from "src/modules/database/database.service";
 import { Inject } from "@nestjs/common";
 import { SEQUELIZE } from "src/modules/database/database.di-tokens";
 import { UserProfileEntity } from "../entities/user_profile.entity";
-import { RoleEntity } from "../entities/role.entity";
 import { UsersRolesParamsDto } from "../dto/users-roles-params";
 import { Op } from "sequelize";
+import { RoleEntity } from "../entities/role.entity";
+import { PermissionEntity } from "../entities/permission.entity";
+import { UserTemporaryPermissionEntity } from "../entities/users_temporary_permissions";
 
 export class UserRepository extends RepositoryBase<UserEntity> {
     constructor(
@@ -20,6 +22,7 @@ export class UserRepository extends RepositoryBase<UserEntity> {
     protected getModel() {
         return UserEntity;
     }
+    
     async createUser(data: CreateUserDto, options?: DatabaseOptionType): Promise<[UserEntity | null, boolean]> {
         return await this.databaseService.transaction(async (t) => {
             const { email, fullName, password = "", thumbnail } = data;
@@ -96,6 +99,50 @@ export class UserRepository extends RepositoryBase<UserEntity> {
             order: [
                 ['id', 'DESC']
             ],
+        })
+    }
+
+    async getUserAuthProfile(userId: string) {
+        return await this.findByPk(userId, {
+            rejectOnEmpty: false,
+            include: [
+                {
+                    model: UserProfileEntity,
+                    required: false
+                },
+                {
+                    model: RoleEntity,
+                    required: false,
+                    include: [
+                        {
+                            model: PermissionEntity,
+                            required: false,
+                        }
+                    ]
+                },
+                {
+                    model: PermissionEntity,
+                    required: false,
+                },
+                {
+                    model: UserTemporaryPermissionEntity,
+                    required: false,
+                    where: {
+                        startTime: {
+                            [Op.lte]: new Date()
+                        },
+                        endTime: {
+                            [Op.gt]: new Date()
+                        }
+                    },
+                    include: [
+                        {
+                            model: PermissionEntity,
+                            required: false,
+                        }
+                    ]
+                }
+            ]
         })
     }
 }

@@ -1,8 +1,8 @@
-import { GetUserProfile } from '@/actions/user.action'
+import { GetProfile } from '@/actions/auth.action'
 import { create, StateCreator } from 'zustand'
 
 type State = {
-    profile: GetUserProfile | null
+    profile: GetProfile | null
     setProfile: (profile: State["profile"]) => void
 }
 

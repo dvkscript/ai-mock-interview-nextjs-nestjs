@@ -4,22 +4,23 @@ import { UsersController } from './users.controller';
 import { userProviders } from './user.provider';
 import { DatabaseModule } from '../database/database.module';
 import { AuthModule } from '../auth/auth.module';
-import { PermissionsGuard } from './guards/permissions.guard';
+import { PERMISSION_REPOSITORY, ROLE_REPOSITORY, USER_REPOSITORY } from './user.di-tokens';
 
 @Module({
   imports: [
     DatabaseModule,
-    forwardRef(() => AuthModule)
+    forwardRef(() => AuthModule),
   ],
   controllers: [UsersController],
   providers: [
     UsersService,
     ...userProviders,
-    PermissionsGuard
   ],
   exports: [
     UsersService,
-    PermissionsGuard
+    ROLE_REPOSITORY,
+    PERMISSION_REPOSITORY,
+    USER_REPOSITORY
   ]
 })
 export class UsersModule {}

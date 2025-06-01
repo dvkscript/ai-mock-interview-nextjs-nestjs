@@ -1,13 +1,13 @@
 import { BelongsToMany, Column, DataType, HasMany, HasOne, Model, Table } from "sequelize-typescript";
 import { UserRoleEntity } from "./user_role.entity";
-import { RoleEntity } from "./role.entity";
-import { PermissionEntity } from "./permission.entity";
 import { UserPermissionEntity } from "./user_permission.entity";
 import { UserTokenEntity } from "./user_tokens.entity";
 import { UserProviderEntity } from "./user_provider.entity";
 import { UserProfileEntity } from "./user_profile.entity";
 import { UserTemporaryPermissionEntity } from "./users_temporary_permissions";
 import { PayEntity } from "src/modules/pay/entities/pay.entity";
+import { PermissionEntity } from "src/modules/users/entities/permission.entity";
+import { RoleEntity } from "./role.entity";
 
 @Table({
     tableName: 'users',

@@ -1,39 +1,41 @@
+import { AdminRole } from "@/enums/role";
+
 export const roleFormData = [
   {
     id: "admin",
-    name: "admin",
+    name: "Quản trị viên",
     data: [
-      "admin-access"
+      AdminRole.AdminAccess,
     ],
   },
   {
     id: "role",
-    name: "role",
+    name: "Quản lý vai trò",
     data: [
-      "role-read",
-      "role-create",
-      "role-update",
-      "role-delete",
+      AdminRole.RoleRead,
+      AdminRole.RoleCreate,
+      AdminRole.RoleUpdate,
+      AdminRole.RoleDelete,
     ]
   },
   {
     id: "user",
-    name: "user",
+    name: "Quản lý người dùng",
     data: [
-      "user-read",
-      "user-create",
-      "user-update",
-      "user-delete",
+      AdminRole.UserRead,
+      AdminRole.UserCreate,
+      AdminRole.UserUpdate,
+      AdminRole.UserDelete
     ]
   },
   {
     id: "pay",
-    name: "payment",
+    name: "Quản lý thanh toán",
     data: [
-      "payment-read",
-      "payment-create",
-      "payment-update",
-      "payment-delete",
+      AdminRole.PaymentRead,
+      AdminRole.PaymentCreate,
+      AdminRole.PaymentUpdate,
+      AdminRole.PaymentDelete
     ]
   }
 ]

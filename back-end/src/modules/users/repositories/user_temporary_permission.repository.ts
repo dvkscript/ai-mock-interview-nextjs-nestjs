@@ -1,7 +1,7 @@
 import { Op } from "sequelize";
 import { UserTemporaryPermissionEntity } from "../entities/users_temporary_permissions";
 import { RepositoryBase } from "src/libs/db/repository.base";
-import { PermissionEntity } from "../entities/permission.entity";
+import { PermissionEntity } from "src/modules/users/entities/permission.entity";
 
 export class UserTemporaryPermissionRepository extends RepositoryBase<UserTemporaryPermissionEntity> {
     protected getModel() {

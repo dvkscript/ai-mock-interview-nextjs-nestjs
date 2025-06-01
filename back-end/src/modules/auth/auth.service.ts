@@ -6,6 +6,9 @@ import { UsersService } from '../users/users.service';
 import { ConfigService } from '../shared/config/config.service';
 import { BlacklistRepository } from './repositories/blacklist.repository';
 import { BLACKLIST_REPOSITORY } from './auth.di-tokens';
+import { USER_REPOSITORY } from '../users/user.di-tokens';
+import { UserRepository } from '../users/repositories/user.repository';
+import { FindUserProfileAuthResponse } from './dto/query/find-user-profile.auth.response';
 
 @Injectable()
 export class AuthService {
@@ -15,6 +18,8 @@ export class AuthService {
     private readonly configService: ConfigService,
     @Inject(BLACKLIST_REPOSITORY)
     private readonly blacklistRepo: BlacklistRepository,
+    @Inject(USER_REPOSITORY)
+    private readonly userRepo: UserRepository,
   ) { }
 
   async validateOAuthLogin(profile: ProfileOAuthDto) {
@@ -137,7 +142,11 @@ export class AuthService {
     })
   }
 
-  getUser(userId: string) {
-    return this.userService.getUser(userId);
+  async getUserProfile(userId: string) {
+    const res = await this.userRepo.getUserAuthProfile(userId);
+    if (!res) {
+      return null;
+    }
+    return new FindUserProfileAuthResponse(res);
   }
 }

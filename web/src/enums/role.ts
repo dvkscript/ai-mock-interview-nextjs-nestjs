@@ -1,4 +1,19 @@
 export enum UserRole {
     PRO = "user-pro",
-    ADMIN = "user-admin"
+}
+
+export enum AdminRole {
+    AdminAccess = "admin-access",
+    RoleRead = "role-read",
+    RoleCreate = "role-create",
+    RoleUpdate = "role-update",
+    RoleDelete = "role-delete",
+    UserRead = "user-read",
+    UserCreate = "user-create",
+    UserUpdate = "user-update",
+    UserDelete = "user-delete",
+    PaymentRead = "payment-read",
+    PaymentCreate = "payment-create",
+    PaymentUpdate = "payment-update",
+    PaymentDelete = "payment-delete",
 }

@@ -1,5 +1,6 @@
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from "@nestjs/common";
 import { AuthService } from "./auth.service";
+import { Request } from "express";
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -8,7 +9,7 @@ export class AuthGuard implements CanActivate {
     ) { }
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
-        const request = context.switchToHttp().getRequest();
+        const request = context.switchToHttp().getRequest() as Request;
         const token = this.extractTokenFromHeader(request);
 
         if (!token) {
@@ -29,8 +30,8 @@ export class AuthGuard implements CanActivate {
 
         const { iat, exp, userId } = await this.authService.verifyToken(token);
 
-        const user = await this.authService.getUser(userId);
-
+        const user = await this.authService.getUserProfile(userId);
+        
         if (!user) {
             throw new UnauthorizedException();
         }
@@ -41,7 +42,10 @@ export class AuthGuard implements CanActivate {
             id: user.id,
             email: user.email,
             fullName: user.fullName,
-            token
+            token,
+            roles: user.roles,
+            permissions: user.permissions,
+            thumbnail: user.thumbnail
         };
         return true;
     }

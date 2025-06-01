@@ -21,7 +21,7 @@ module.exports = {
         },
         onDelete: 'CASCADE',
       },
-      role_id: {
+      permission_id: {
         type: Sequelize.UUID,
         allowNull: false,
         references: {
