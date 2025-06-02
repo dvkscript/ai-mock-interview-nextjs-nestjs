@@ -3,7 +3,7 @@ import { PERMISSION_REPOSITORY, ROLE_REPOSITORY } from '../users/user.di-tokens'
 import { RoleRepository } from '../users/repositories/role.repository';
 import { PermissionRepository } from '../users/repositories/permission.repository';
 import { DatabaseService } from '../database/database.service';
-import { CreateRoleInputDto } from './dto/create-role.input.dto';
+import { CreateRoleInputDto } from './dto/input/create-role.input.dto';
 import { SearchRoleQueryInput } from '../users/dto/query/search-role.query.input';
 
 
@@ -49,5 +49,17 @@ export class AdminService {
 
     async getRoleAndCountAll(searchParams: SearchRoleQueryInput) {
         return await this.roleRepository.getRoleAndCountAll(searchParams);
+    }
+
+    async deleteRole(ids: string[]) {
+        const res = await this.roleRepository.delete({
+            id: ids
+        });
+        if (!res) {
+            throw new NotFoundException('Role not found');
+        }
+        return {
+            id: ids
+        }
     }
 }

@@ -4,76 +4,64 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { MoreHorizontal, Search, Plus, Shield } from "lucide-react"
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
 } from "@/components/ui/table"
 import Link from "next/link"
+import { deleteRole, GetRoleAndCountAll } from "@/actions/role.action"
+import dayjs from "@/lib/utils/dayjs"
+import { useCallback, useEffect, useState } from "react"
+import useDebounce from "@/hooks/useDebounce"
+import { useRouter } from "next-nprogress-bar"
+import { useSearchParams } from "next/navigation"
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
+import { toast } from "sonner"
 
-const roles = [
-  {
-    id: 1,
-    name: "Admin",
-    description: "Quản trị viên hệ thống",
-    users: 2,
-    permissions: [
-      "Quản lý người dùng",
-      "Quản lý nội dung",
-      "Quản lý phỏng vấn",
-      "Quản lý phản hồi",
-      "Quản lý cài đặt",
-    ],
-  },
-  {
-    id: 2,
-    name: "Moderator",
-    description: "Điều hành viên",
-    users: 5,
-    permissions: [
-      "Quản lý nội dung",
-      "Quản lý phỏng vấn",
-      "Quản lý phản hồi",
-    ],
-  },
-  {
-    id: 3,
-    name: "User",
-    description: "Người dùng thông thường",
-    users: 100,
-    permissions: [
-      "Xem nội dung",
-      "Tạo phỏng vấn",
-      "Gửi phản hồi",
-    ],
-  },
-]
+interface RolesClientProps {
+    data: GetRoleAndCountAll
+}
 
-// const permissionIcons = {
-//   "Quản lý người dùng": Users,
-//   "Quản lý nội dung": FileText,
-//   "Quản lý phỏng vấn": FileText,
-//   "Quản lý phản hồi": MessageSquare,
-//   "Quản lý cài đặt": Settings,
-//   "Xem nội dung": FileText,
-//   "Tạo phỏng vấn": FileText,
-//   "Gửi phản hồi": MessageSquare,
-// }
+const RolesClient: React.FC<RolesClientProps> = ({
+    data,
+}) => {
+    const searchParams = useSearchParams();
+    const [search, setSearch] = useState(searchParams.get("q") || "");
+    const searchDebounce = useDebounce(search, 400);
+    const router = useRouter();
+    const [selectDelete, setSelectDelete] = useState<GetRoleAndCountAll["rows"][number] | null>(null)
 
+    const getTimeDisplay = useCallback((date: Date) => {
+        const now = dayjs();
+        const created = dayjs(date);
+        const diff = now.diff(created, 'day');
 
-interface RolesClientProps { }
+        if (diff < 1) {
+            return created.fromNow();
+        }
+        return created.format('DD/MM/YYYY - HH:mm');
+    }, []);
 
-const RolesClient: React.FC<RolesClientProps> = ({ }) => {
+    useEffect(() => {
+        const newSearchParams = new URLSearchParams(searchParams);
+        const q = searchParams.get("q") || "";
+
+        if (q === searchDebounce) return;
+        newSearchParams.set('q', searchDebounce);
+        router.replace(`?${newSearchParams.toString()}`);
+    }, [searchDebounce, searchParams, router]);
+
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between">
@@ -95,7 +83,7 @@ const RolesClient: React.FC<RolesClientProps> = ({ }) => {
                 <CardHeader>
                     <CardTitle>Danh sách vai trò</CardTitle>
                     <CardDescription>
-                        Tổng số vai trò: {roles.length}
+                        Tổng số vai trò: {data.count}
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -105,6 +93,8 @@ const RolesClient: React.FC<RolesClientProps> = ({ }) => {
                             <Input
                                 placeholder="Tìm kiếm vai trò..."
                                 className="pl-8"
+                                value={search}
+                                onChange={(e) => setSearch(e.currentTarget.value || "")}
                             />
                         </div>
                         <Button variant="outline">Lọc</Button>
@@ -115,14 +105,14 @@ const RolesClient: React.FC<RolesClientProps> = ({ }) => {
                             <TableHeader>
                                 <TableRow>
                                     <TableHead>Vai trò</TableHead>
-                                    <TableHead>Mô tả</TableHead>
                                     <TableHead>Số người dùng</TableHead>
-                                    <TableHead>Quyền hạn</TableHead>
+                                    <TableHead>Thời gian tạo</TableHead>
+                                    <TableHead>Thời gian sửa</TableHead>
                                     <TableHead className="w-[50px]"></TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {roles.map((role) => (
+                                {data.rows.map((role) => (
                                     <TableRow key={role.id}>
                                         <TableCell>
                                             <div className="flex items-center gap-2">
@@ -130,20 +120,13 @@ const RolesClient: React.FC<RolesClientProps> = ({ }) => {
                                                 <span className="font-medium">{role.name}</span>
                                             </div>
                                         </TableCell>
-                                        <TableCell>{role.description}</TableCell>
-                                        <TableCell>{role.users}</TableCell>
+                                        {/* <TableCell>{role.description}</TableCell> */}
+                                        <TableCell>{role.userCount}</TableCell>
                                         <TableCell>
-                                            {/* <div className="flex flex-wrap gap-2">
-                        {role.permissions.map((permission) => {
-                          const Icon = permissionIcons[permission]
-                          return (
-                            <Badge key={permission} variant="secondary">
-                              <Icon className="mr-1 h-3 w-3" />
-                              {permission}
-                            </Badge>
-                          )
-                        })}
-                      </div> */}
+                                            {getTimeDisplay(role.createdAt)}
+                                        </TableCell>
+                                        <TableCell>
+                                            {getTimeDisplay(role.updatedAt)}
                                         </TableCell>
                                         <TableCell>
                                             <DropdownMenu>
@@ -158,9 +141,15 @@ const RolesClient: React.FC<RolesClientProps> = ({ }) => {
                                                     <Link href={`/admin/roles/${role.id}/edit`}>
                                                         <DropdownMenuItem>Chỉnh sửa</DropdownMenuItem>
                                                     </Link>
-                                                    <DropdownMenuItem>Xem chi tiết</DropdownMenuItem>
                                                     <DropdownMenuSeparator />
-                                                    <DropdownMenuItem className="text-red-600">
+                                                    <DropdownMenuItem
+                                                        className="text-red-600"
+                                                        onClick={() => {
+                                                            setTimeout(() => {
+                                                                setSelectDelete(role);
+                                                            }, 100);
+                                                        }}
+                                                    >
                                                         Xóa
                                                     </DropdownMenuItem>
                                                 </DropdownMenuContent>
@@ -173,6 +162,43 @@ const RolesClient: React.FC<RolesClientProps> = ({ }) => {
                     </div>
                 </CardContent>
             </Card>
+            <AlertDialog open={!!selectDelete} onOpenChange={(open) => {
+                if (!open) {
+                    setSelectDelete(null)
+                }
+            }}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>
+                            Xóa vai trò
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Bạn có chắc chắn muốn xóa vai trò này không?
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>
+                            Hủy bỏ
+                        </AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={async () => {
+                                if (!selectDelete) return
+                                const toastId = toast.loading("Đang xóa vai trò...");
+                                const res = await deleteRole([selectDelete.id]);
+                                toast.dismiss(toastId);
+                                if (!res.data) {
+                                    toast.error(res.message)
+
+                                } else {
+                                    setSelectDelete(null)
+                                }
+                            }}
+                        >
+                            Xóa
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
     )
 };

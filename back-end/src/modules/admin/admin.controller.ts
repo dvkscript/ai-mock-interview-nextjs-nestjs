@@ -5,8 +5,9 @@ import { AdminService } from './admin.service';
 import { AdminRole } from '../shared/enum/role';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
-import { CreateRoleInputDto } from './dto/create-role.input.dto';
+import { CreateRoleInputDto } from './dto/input/create-role.input.dto';
 import { SearchRoleQueryInput } from '../users/dto/query/search-role.query.input';
+import { DeleteRoleInput } from './dto/input/delete-role.input.dto';
 // import { CreateRoleDto } from './dto/create-role.dto';
 // import { UpdateRoleDto } from './dto/update-role.dto';
 // import { CreateUserDto } from './dto/create-user.dto';
@@ -35,11 +36,18 @@ export class AdminController {
   @Get("/roles")
   async getRoleAndCountAll(@Query() searchParams: SearchRoleQueryInput) {
     const res = await this.adminService.getRoleAndCountAll(searchParams);
-    console.log(res);
-    
     return res;
     
   }
+
+  @ApiOperation({ summary: 'Delete role' })
+  @ApiResponse({ status: 200, description: 'Delete role success' })
+  @Delete("/role")
+  async deleteRole(@Body() body: DeleteRoleInput) {
+    return await this.adminService.deleteRole(body.id);
+  }
+
+
 
 
 

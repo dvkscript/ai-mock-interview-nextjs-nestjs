@@ -3,6 +3,7 @@ import { RoleEntity } from "../entities/role.entity";
 import { SearchRoleQueryInput } from "../dto/query/search-role.query.input";
 import { col, FindAndCountOptions, fn, literal, Op } from "sequelize";
 import { UserEntity } from "../entities/user.entity";
+import { GetRoleAndCountAllQueryResponse, RoleEntityWithUserCount } from "../dto/query/get-roleAndCountAll.query.response";
 
 export class RoleRepository extends RepositoryBase<RoleEntity> {
     protected getModel() {
@@ -54,10 +55,9 @@ export class RoleRepository extends RepositoryBase<RoleEntity> {
         if (!rows) {
             throw new Error("Invalid Server Error");
         }
-
-        return {
+        return new GetRoleAndCountAllQueryResponse({
             count,
-            rows
-        }
+            rows: rows as RoleEntityWithUserCount[]
+        })
     }
 }

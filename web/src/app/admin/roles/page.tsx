@@ -14,16 +14,17 @@ export default async function RolesPage({
 }: RolesPageProps) {
   const { limit = "10", page = "1", ...rest } = await searchParams;
 
-  const data = await getRoleAndCountAll({
+  const roleRes = await getRoleAndCountAll({
     limit,
     page,
     ...rest
   });
-
-  console.log(data);
   
+  if (!roleRes.data) {
+    throw new Error(roleRes.status.toString())
+  }
 
   return (
-    <RolesClient />
+    <RolesClient data={roleRes.data} />
   )
 } 
