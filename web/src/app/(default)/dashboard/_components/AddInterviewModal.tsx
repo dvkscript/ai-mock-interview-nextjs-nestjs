@@ -39,7 +39,9 @@ const AddInterviewModal: React.FC<AddInterviewModalProps> = ({
 
     const onSubmit = async (data: TGenerateQuestion) => {
         startTransition(async () => {
+            const toastId = toast.loading("Đang tạo phỏng vấn...");
             const res = await GenerateQuestion(data);
+            toast.dismiss(toastId);
             if (!res.ok) {
                 toast.error(res.message)
             } else {

@@ -14,8 +14,26 @@ import ClientOnly from '@/components/common/ClientOnly'
 import { useUserStore } from '@/stores/userStore'
 import { setCookie } from '@/lib/utils/cookie'
 import { redirect, usePathname } from 'next/navigation'
+import { cn } from '@/lib/utils'
+
+const bgColors = [
+  "bg-red-300",
+  "bg-green-300",
+  "bg-blue-300",
+  "bg-yellow-300",
+  "bg-purple-300",
+  "bg-pink-300",
+];
+
+const getRandomBgColor = () => {
+  const index = Math.floor(Math.random() * bgColors.length);
+  return bgColors[index];
+};
+
 
 const LayoutClient = ({ children, profile, isUserPro }: { children: React.ReactNode, profile: GetProfile | null, isUserPro: boolean }) => {
+    const randomColor = getRandomBgColor();
+
     const router = useRouter();
     const pathname = usePathname()
 
@@ -84,9 +102,9 @@ const LayoutClient = ({ children, profile, isUserPro }: { children: React.ReactN
                         <DropdownMenu>
                             <DropdownMenuTrigger className='select-none outline-none'>
                                 <Avatar className="size-9 ring-2 ring-blue-500/20 hover:ring-blue-500/40 transition-all">
-                                    <AvatarImage src={profile?.thumbnail} alt={"@shadcn"} />
-                                    <AvatarFallback className="rounded-lg">
-                                        Avatar
+                                    <AvatarImage src={profile?.thumbnail} alt={profile?.fullName} />
+                                    <AvatarFallback className={cn("rounded-lg", randomColor)}>
+                                        {profile?.fullName.charAt(0).toUpperCase()}
                                     </AvatarFallback>
                                 </Avatar>
                             </DropdownMenuTrigger>
