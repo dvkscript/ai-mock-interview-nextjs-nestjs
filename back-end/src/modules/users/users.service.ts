@@ -14,6 +14,7 @@ import { UserRole } from '../shared/enum/role';
 import { Op } from 'sequelize';
 import * as dayjs from 'dayjs';
 import { UsersRolesParamsDto } from './dto/users-roles-params';
+import { GetUserListQueryReponse } from './dto/query/get-userList.query.response';
 
 
 @Injectable()
@@ -134,7 +135,18 @@ export class UsersService {
         return res.map(p => p.permission.value);
     }
 
-    async getUsersRoles(params: UsersRolesParamsDto) {
-        return this.userRepository.getUsersRoles(params);
+    async getUserList(params: UsersRolesParamsDto) {
+        const res = await this.userRepository.getUserList(params);
+
+        if (!res) {
+            throw new Error("Invalid Server Error")
+        }
+
+        return {
+            count: res.count,
+            rows: res.rows.map(row => {
+                return new GetUserListQueryReponse(row);
+            })
+        }
     }
 }

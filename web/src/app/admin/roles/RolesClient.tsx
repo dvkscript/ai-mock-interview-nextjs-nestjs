@@ -33,6 +33,14 @@ interface RolesClientProps {
     data: GetRoleAndCountAll
 }
 
+const columns = [
+    { id: "name", label: "Tên vai trò" },
+    { id: "userCount", label: "Số người dùng" },
+    { id: "createdAt", label: "Thời gian tạo" },
+    { id: "updatedAt", label: "Thời gian sửa" },
+    { id: "action", label: "" },
+]
+
 const RolesClient: React.FC<RolesClientProps> = ({
     data,
 }) => {
@@ -104,59 +112,69 @@ const RolesClient: React.FC<RolesClientProps> = ({
                         <Table>
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead>Vai trò</TableHead>
-                                    <TableHead>Số người dùng</TableHead>
-                                    <TableHead>Thời gian tạo</TableHead>
-                                    <TableHead>Thời gian sửa</TableHead>
-                                    <TableHead className="w-[50px]"></TableHead>
+                                    {columns.map((c) => {
+                                        if (c.id === "action") {
+                                            <TableHead className="w-[50px]"></TableHead>
+                                        }
+                                        return <TableHead key={c.id}>{c.label}</TableHead>
+                                    })}
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {data.rows.map((role) => (
-                                    <TableRow key={role.id}>
-                                        <TableCell>
-                                            <div className="flex items-center gap-2">
-                                                <Shield className="h-4 w-4" />
-                                                <span className="font-medium">{role.name}</span>
-                                            </div>
-                                        </TableCell>
-                                        {/* <TableCell>{role.description}</TableCell> */}
-                                        <TableCell>{role.userCount}</TableCell>
-                                        <TableCell>
-                                            {getTimeDisplay(role.createdAt)}
-                                        </TableCell>
-                                        <TableCell>
-                                            {getTimeDisplay(role.updatedAt)}
-                                        </TableCell>
-                                        <TableCell>
-                                            <DropdownMenu>
-                                                <DropdownMenuTrigger asChild>
-                                                    <Button variant="ghost" size="icon">
-                                                        <MoreHorizontal className="h-4 w-4" />
-                                                    </Button>
-                                                </DropdownMenuTrigger>
-                                                <DropdownMenuContent align="end">
-                                                    <DropdownMenuLabel>Hành động</DropdownMenuLabel>
-                                                    <DropdownMenuSeparator />
-                                                    <Link href={`/admin/roles/${role.id}/edit`}>
-                                                        <DropdownMenuItem>Chỉnh sửa</DropdownMenuItem>
-                                                    </Link>
-                                                    <DropdownMenuSeparator />
-                                                    <DropdownMenuItem
-                                                        className="text-red-600"
-                                                        onClick={() => {
-                                                            setTimeout(() => {
-                                                                setSelectDelete(role);
-                                                            }, 100);
-                                                        }}
-                                                    >
-                                                        Xóa
-                                                    </DropdownMenuItem>
-                                                </DropdownMenuContent>
-                                            </DropdownMenu>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
+                                {data.rows.length === 0 ?
+                                    <>
+                                        <TableRow>
+                                            <TableCell colSpan={columns.length} className="text-2xl">
+                                                Không có dữ liệu
+                                            </TableCell>
+                                        </TableRow>
+                                    </> : <>
+                                        {data.rows.map((role) => (
+                                            <TableRow key={role.id}>
+                                                <TableCell>
+                                                    <div className="flex items-center gap-2">
+                                                        <Shield className="h-4 w-4" />
+                                                        <span className="font-medium">{role.name}</span>
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell>{role.userCount}</TableCell>
+                                                <TableCell>
+                                                    {getTimeDisplay(role.createdAt)}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {getTimeDisplay(role.updatedAt)}
+                                                </TableCell>
+                                                <TableCell className="flex justify-center items-center">
+                                                    <DropdownMenu>
+                                                        <DropdownMenuTrigger asChild>
+                                                            <Button variant="ghost" size="icon">
+                                                                <MoreHorizontal className="h-4 w-4" />
+                                                            </Button>
+                                                        </DropdownMenuTrigger>
+                                                        <DropdownMenuContent align="end">
+                                                            <DropdownMenuLabel>Hành động</DropdownMenuLabel>
+                                                            <DropdownMenuSeparator />
+                                                            <Link href={`/admin/roles/${role.id}/edit`}>
+                                                                <DropdownMenuItem>Chỉnh sửa</DropdownMenuItem>
+                                                            </Link>
+                                                            <DropdownMenuSeparator />
+                                                            <DropdownMenuItem
+                                                                className="text-red-600"
+                                                                onClick={() => {
+                                                                    setTimeout(() => {
+                                                                        setSelectDelete(role);
+                                                                    }, 100);
+                                                                }}
+                                                            >
+                                                                Xóa
+                                                            </DropdownMenuItem>
+                                                        </DropdownMenuContent>
+                                                    </DropdownMenu>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </>
+                                }
                             </TableBody>
                         </Table>
                     </div>
@@ -185,10 +203,10 @@ const RolesClient: React.FC<RolesClientProps> = ({
                                 if (!selectDelete) return
                                 const toastId = toast.loading("Đang xóa vai trò...");
                                 const res = await deleteRole([selectDelete.id]);
+
                                 toast.dismiss(toastId);
                                 if (!res.data) {
                                     toast.error(res.message)
-
                                 } else {
                                     setSelectDelete(null)
                                 }

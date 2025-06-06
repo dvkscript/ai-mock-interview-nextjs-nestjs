@@ -13,35 +13,71 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { GetUserAndCountAll } from "@/actions/user.action"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { useCallback, useEffect, useState } from "react"
+import dayjs from "@/lib/utils/dayjs"
+import { useSearchParams } from "next/navigation"
+import useDebounce from "@/hooks/useDebounce"
+import { useRouter } from "next-nprogress-bar"
 
-const users = [
-  {
-    id: 1,
-    name: "Nguyễn Văn A",
-    email: "nguyenvana@example.com",
-    role: "user",
-    status: "active",
-    lastLogin: "2024-03-20 10:30",
-  },
-  {
-    id: 2,
-    name: "Trần Thị B",
-    email: "tranthib@example.com",
-    role: "admin",
-    status: "active",
-    lastLogin: "2024-03-20 09:15",
-  },
-  {
-    id: 3,
-    name: "Lê Văn C",
-    email: "levanc@example.com",
-    role: "user",
-    status: "inactive",
-    lastLogin: "2024-03-19 15:45",
-  },
-]
+interface UserClientProps {
+  data: GetUserAndCountAll
+}
 
-export default function UserClient() {
+const badgeColors = [
+  "bg-red-500 text-white",
+  "bg-orange-500 text-white",
+  "bg-amber-500 text-black",
+  "bg-yellow-400 text-black",
+  "bg-lime-500 text-black",
+  "bg-green-500 text-white",
+  "bg-emerald-500 text-white",
+  "bg-teal-500 text-white",
+  "bg-cyan-500 text-black",
+  "bg-sky-500 text-white",
+  "bg-blue-500 text-white",
+  "bg-indigo-500 text-white",
+  "bg-violet-500 text-white",
+  "bg-purple-500 text-white",
+  "bg-fuchsia-500 text-white",
+  "bg-pink-500 text-white",
+  "bg-rose-500 text-white",
+  "bg-gray-500 text-white",
+  "bg-zinc-500 text-white",
+  "bg-neutral-500 text-white",
+  "bg-stone-500 text-white",
+];
+
+export default function UserClient({
+  data
+}: UserClientProps) {
+  const searchParams = useSearchParams();
+  const [search, setSearch] = useState(searchParams.get("q") || "");
+  const searchDebounce = useDebounce(search, 400);
+  const router = useRouter();
+
+  const getTimeDisplay = useCallback((date: Date) => {
+    const now = dayjs();
+    const created = dayjs(date);
+    const diff = now.diff(created, 'day');
+
+    if (diff < 30) {
+      return created.fromNow();
+    }
+    return created.format('HH:mm - DD/MM/YYYY');
+  }, []);
+
+  useEffect(() => {
+    const newSearchParams = new URLSearchParams(searchParams);
+    const q = searchParams.get("q") || "";
+
+    if (q === searchDebounce) return;
+    newSearchParams.set('q', searchDebounce);
+    router.replace(`?${newSearchParams.toString()}`);
+  }, [searchDebounce, searchParams, router]);
+
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -61,7 +97,7 @@ export default function UserClient() {
         <CardHeader>
           <CardTitle>Danh sách người dùng</CardTitle>
           <CardDescription>
-            Tổng số người dùng: {users.length}
+            Tổng số người dùng: {data.count}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -69,8 +105,10 @@ export default function UserClient() {
             <div className="relative flex-1">
               <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
               <Input
-                placeholder="Tìm kiếm người dùng..."
+                placeholder="Tìm kiếm người dùng theo tên hoặc email..."
                 className="pl-8"
+                value={search}
+                onChange={(e) => setSearch(e.currentTarget.value || "")}
               />
             </div>
             <Button variant="outline">Lọc</Button>
@@ -80,36 +118,64 @@ export default function UserClient() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>ID</TableHead>
                   <TableHead>Tên</TableHead>
                   <TableHead>Email</TableHead>
                   <TableHead>Vai trò</TableHead>
-                  <TableHead>Trạng thái</TableHead>
-                  <TableHead>Đăng nhập cuối</TableHead>
+                  <TableHead>Đăng nhập lần cuối</TableHead>
                   <TableHead className="w-[50px]"></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {users.map((user) => (
+                {data.rows.map((user) => (
                   <TableRow key={user.id}>
-                    <TableCell>{user.id}</TableCell>
-                    <TableCell>{user.name}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center justify-start gap-2">
+                        <Avatar className="rounded-md size-12">
+                          <AvatarImage
+                            alt={user.fullName}
+                            src={user.thumbnail}
+                            className="rounded-lg"
+                          />
+                          <AvatarFallback className="rounded-lg">
+                            {
+                              user.fullName.charAt(0).toUpperCase()
+                            }
+                          </AvatarFallback>
+                        </Avatar>
+                        <span>
+                          {user.fullName}
+                        </span>
+                      </div>
+                    </TableCell>
                     <TableCell>{user.email}</TableCell>
-                    <TableCell>
-                      <Badge
-                        variant={user.role === "admin" ? "default" : "secondary"}
-                      >
-                        {user.role === "admin" ? "Admin" : "Người dùng"}
-                      </Badge>
+                    <TableCell className="flex-wrap flex gap-3 items-center justify-start h-full">
+                      {user.roles.length === 0 ? <span className="text-sm text-gray-500">
+                        Không có
+                      </span> : user.roles.map((r, index) => {
+                        return <Badge key={r.id} className={`${badgeColors[index % badgeColors.length]} text-nowrap max-w-20`}>
+                          {r.name}
+                        </Badge>
+                      })}
                     </TableCell>
                     <TableCell>
-                      <Badge
-                        variant={user.status === "active" ? "success" : "destructive" as any}
-                      >
-                        {user.status === "active" ? "Hoạt động" : "Không hoạt động" as any}
-                      </Badge>
+                      {
+                        !user.provider ?
+                          <>
+                            <span className="text-sm text-gray-400 italic">Không có provider</span>
+                          </>
+                          :
+                          <>
+                            <div className="space-y-1">
+                              <div className="font-medium capitalize">
+                                {user.provider?.name}
+                              </div>
+                              <div className="text-sm text-gray-500">
+                                {getTimeDisplay(user.provider.createdAt)}
+                              </div>
+                            </div>
+                          </>
+                      }
                     </TableCell>
-                    <TableCell>{user.lastLogin}</TableCell>
                     <TableCell>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>

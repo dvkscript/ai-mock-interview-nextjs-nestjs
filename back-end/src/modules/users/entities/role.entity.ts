@@ -1,4 +1,4 @@
-import { BelongsToMany, Column, DataType, HasMany, Model, Table } from "sequelize-typescript";
+import { BelongsToMany, Column, DataType, HasMany, Model, Table, AssociationActionOptions } from "sequelize-typescript";
 import { PermissionEntity } from "./permission.entity";
 import { UserEntity } from "src/modules/users/entities/user.entity";
 import { UserRoleEntity } from "src/modules/users/entities/user_role.entity";
@@ -44,4 +44,6 @@ export class RoleEntity extends Model<RoleEntity> {
 
     @BelongsToMany(() => PermissionEntity, () => RolePermissionEntity)
     permissions: PermissionEntity[];
+    
+    public setPermissions!: (permissions: PermissionEntity[] | string[], options?: AssociationActionOptions) => Promise<void>;
 }

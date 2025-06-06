@@ -4,6 +4,7 @@ import { SearchRoleQueryInput } from "../dto/query/search-role.query.input";
 import { col, FindAndCountOptions, fn, literal, Op } from "sequelize";
 import { UserEntity } from "../entities/user.entity";
 import { GetRoleAndCountAllQueryResponse, RoleEntityWithUserCount } from "../dto/query/get-roleAndCountAll.query.response";
+import { PermissionEntity } from "../entities/permission.entity";
 
 export class RoleRepository extends RepositoryBase<RoleEntity> {
     protected getModel() {
@@ -13,7 +14,7 @@ export class RoleRepository extends RepositoryBase<RoleEntity> {
     async getRoleAndCountAll(searchParams: SearchRoleQueryInput) {
         const { q, limit, page } = searchParams;
         const offset = (page - 1) * limit;
-
+        
         const [count, rows] = await Promise.all([
             this.count({
             }, {
@@ -46,7 +47,7 @@ export class RoleRepository extends RepositoryBase<RoleEntity> {
                 subQuery: false,
                 where: !!q ? {
                     name: {
-                        [Op.like]: `%${q}%`
+                        [Op.iLike]: `%${q}%`
                     }
                 } : undefined,
             })
@@ -58,6 +59,18 @@ export class RoleRepository extends RepositoryBase<RoleEntity> {
         return new GetRoleAndCountAllQueryResponse({
             count,
             rows: rows as RoleEntityWithUserCount[]
+        })
+    }
+
+    async getRoleWithPermissions(roleId: string) {
+        return await this.findByPk(roleId, {
+            rejectOnEmpty: false,
+            include: [
+                {
+                    model: PermissionEntity,
+                    required: false,
+                }
+            ]
         })
     }
 }

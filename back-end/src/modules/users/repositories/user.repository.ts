@@ -10,6 +10,7 @@ import { Op } from "sequelize";
 import { RoleEntity } from "../entities/role.entity";
 import { PermissionEntity } from "../entities/permission.entity";
 import { UserTemporaryPermissionEntity } from "../entities/users_temporary_permissions";
+import { UserProviderEntity } from "../entities/user_provider.entity";
 
 export class UserRepository extends RepositoryBase<UserEntity> {
     constructor(
@@ -22,7 +23,7 @@ export class UserRepository extends RepositoryBase<UserEntity> {
     protected getModel() {
         return UserEntity;
     }
-    
+
     async createUser(data: CreateUserDto, options?: DatabaseOptionType): Promise<[UserEntity | null, boolean]> {
         return await this.databaseService.transaction(async (t) => {
             const { email, fullName, password = "", thumbnail } = data;
@@ -61,7 +62,7 @@ export class UserRepository extends RepositoryBase<UserEntity> {
         })
     }
 
-    async getUsersRoles(params: UsersRolesParamsDto) {
+    async getUserList(params: UsersRolesParamsDto) {
         const page = params.page || 1;
         const limit = params.limit || 10;
         const offset = (page - 1) * limit;
@@ -74,12 +75,12 @@ export class UserRepository extends RepositoryBase<UserEntity> {
                 [Op.or]: [
                     {
                         email: {
-                            [Op.like]: `%${q}%`
+                            [Op.iLike]: `%${q}%`
                         }
                     },
                     {
                         fullName: {
-                            [Op.like]: `%${q}%`
+                            [Op.iLike]: `%${q}%`
                         }
                     }
                 ],
@@ -87,11 +88,27 @@ export class UserRepository extends RepositoryBase<UserEntity> {
             include: [
                 {
                     model: RoleEntity,
-                    required: false
+                    required: false,
+                    attributes: {
+                        exclude: ["userId"]
+                    }
                 },
                 {
                     model: UserProfileEntity,
-                    required: false
+                    required: false,
+                    attributes: {
+                        exclude: ["userId"]
+                    }
+                },
+                {
+                    model: UserProviderEntity,
+                    required: false,
+                    separate: true,           // Quan trọng: tách query riêng
+                    limit: 1,                 // Chỉ lấy 1 bản ghi
+                    order: [['createdAt', 'DESC']], // Hoặc theo id nếu muốn
+                    attributes: {
+                        exclude: ["userId"]
+                    }
                 }
             ],
             offset,
@@ -142,6 +159,28 @@ export class UserRepository extends RepositoryBase<UserEntity> {
                         }
                     ]
                 }
+            ]
+        })
+    }
+
+    async getUserDetails(userId: string) {
+        return await this.findByPk(userId, {
+            rejectOnEmpty: false,
+            include: [
+                {
+                    model: UserProfileEntity,
+                    required: false
+                },
+                {
+                    model: RoleEntity,
+                    required: false,
+                    include: [
+                        {
+                            model: PermissionEntity,
+                            required: false,
+                        }
+                    ]
+                },
             ]
         })
     }

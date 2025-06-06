@@ -182,62 +182,6 @@ export default function AddRolePage() {
                   </FormItem>
                 )}
               />
-
-              {/* <div className="space-y-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">
-                    Quyền hạn
-                  </label>
-
-                  {
-                    roleFormData.map((item) => {
-                      if (item.id === "admin") {
-                        return <div className="p-4 border rounded-lg space-y-2" key={item.id}>
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <h3 className="font-medium">
-                                {item.name}
-                              </h3>
-                              <p className="text-sm text-gray-500">Truy cập trang quản trị</p>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <Switch id="airplane-mode" />
-                            </div>
-                          </div>
-                        </div>
-                      }
-                      return <div className="p-4 border rounded-lg space-y-2" key={item.id}>
-                        <h3 className="font-medium">
-                          {item.name}
-                        </h3>
-                        <div className="flex items-center justify-between pr-2">
-                          {item.data.map((role, index) => {
-                            return <div key={index} className="flex items-center gap-2">
-                              <Switch id={`${item.id}-${index}`} value={role} />
-                              <Label htmlFor={`${item.id}-${index}`}>
-                                {
-                                  role.endsWith("-read") && "Xem"
-                                }
-                                {
-                                  role.endsWith("-create") && "Thêm"
-                                }
-                                {
-                                  role.endsWith("-update") && "Sửa"
-                                }
-                                {
-                                  role.endsWith("-delete") && "Xóa"
-                                }
-                              </Label>
-                            </div>
-                          })}
-                        </div>
-                      </div>
-                    })
-                  }
-
-                </div>
-              </div> */}
-
               <div className="flex justify-end gap-4">
                 <Link href="/admin/roles">
                   <Button variant="outline">Hủy</Button>

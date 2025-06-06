@@ -1,4 +1,4 @@
-import { getUsers } from "@/actions/user.action";
+import { getUserAndCountAll } from "@/actions/user.action";
 import React from "react"
 import UserClient from "./UserClient";
 
@@ -19,14 +19,18 @@ const UserPage: React.FC<UserPageProps> = async ({
 
   const search = await searchParams;
 
-  const user = await getUsers({
+  const userRes = await getUserAndCountAll({
     page,
     ...search,
     limit
   });
-  console.log(user);
+
+  if (!userRes.ok || !userRes.data) {
+    throw new Error(userRes.status.toString())
+  }
+
   return (
-    <UserClient />
+    <UserClient data={userRes.data} />
   );
 };
 

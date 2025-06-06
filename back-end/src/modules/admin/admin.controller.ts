@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '../auth/auth.guard';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AdminService } from './admin.service';
@@ -8,6 +8,7 @@ import { Roles } from '../auth/decorators/roles.decorator';
 import { CreateRoleInputDto } from './dto/input/create-role.input.dto';
 import { SearchRoleQueryInput } from '../users/dto/query/search-role.query.input';
 import { DeleteRoleInput } from './dto/input/delete-role.input.dto';
+import { UsersRolesParamsDto } from '../users/dto/users-roles-params';
 // import { CreateRoleDto } from './dto/create-role.dto';
 // import { UpdateRoleDto } from './dto/update-role.dto';
 // import { CreateUserDto } from './dto/create-user.dto';
@@ -47,7 +48,33 @@ export class AdminController {
     return await this.adminService.deleteRole(body.id);
   }
 
+  @ApiOperation({ summary: 'Get role by id' })
+  @ApiResponse({ status: 200, description: 'Get role by id success' })
+  @Get("/role/:roleId")
+  async getRoleById(@Param("roleId") roleId: string) {
+    return await this.adminService.getRole(roleId);
+  }
 
+  @ApiOperation({ summary: 'Update role' })
+  @ApiResponse({ status: 200, description: 'Update role success' })
+  @Put("/role/:roleId")
+  async updateRole(@Param("roleId") roleId: string, @Body() body: CreateRoleInputDto) {
+    return await this.adminService.updateRole(roleId, body);
+  }
+
+  @ApiOperation({ summary: 'Get users' })
+  @ApiResponse({ status: 200, description: 'Get users success' })
+  @Get("/users")
+  async getUsers(@Query() searchParams: UsersRolesParamsDto) {
+    return await this.adminService.getUsers(searchParams);
+  }
+
+  @ApiOperation({ summary: 'Get user by id' })
+  @ApiResponse({ status: 200, description: 'Get user by id success' })
+  @Get("/user/:userId")
+  async getUserById(@Param("userId") userId: string) {
+    return await this.adminService.getUser(userId);
+  }
 
 
 

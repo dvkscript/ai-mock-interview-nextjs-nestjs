@@ -5,8 +5,6 @@ export type Role = {
     name: string;
     createdAt: Date;
     updatedAt: Date;
-    users?: User[];
-    permissions?: Permission[];
 }
 
 export type Permission = {
@@ -14,8 +12,14 @@ export type Permission = {
     value: UserRole | AdminRole;
     createdAt: Date;
     updatedAt: Date;
-    roles?: Role[];
-    users?: User[];
+}
+
+export type UserProvider = {
+    id: string;
+    name: string;
+    userId: string;
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 export type User = {
@@ -25,6 +29,4 @@ export type User = {
     password?: string;
     createdAt: Date;
     updatedAt: Date;
-    roles?: Role[];
-    permissions?: Permission[];
 }
