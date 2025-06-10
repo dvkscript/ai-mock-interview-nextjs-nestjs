@@ -42,7 +42,7 @@ export class AdminService {
                 }, {
                     transaction
                 }),
-                this.permissionRepository.bulkCreate(newPermissions, {
+                newPermissions.length > 0 && this.permissionRepository.bulkCreate(newPermissions, {
                     transaction
                 })
             ]);
@@ -52,7 +52,7 @@ export class AdminService {
 
             const allPermissions = [
                 ...permissions,
-                ...createdPermissions
+                ...createdPermissions || []
             ];
 
             await role.setPermissions(allPermissions, { transaction });
