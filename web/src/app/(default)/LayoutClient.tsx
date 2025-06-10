@@ -14,20 +14,21 @@ import ClientOnly from '@/components/common/ClientOnly'
 import { useUserStore } from '@/stores/userStore'
 import { setCookie } from '@/lib/utils/cookie'
 import { redirect, usePathname } from 'next/navigation'
-import { cn } from '@/lib/utils'
+import { cn, isPermission } from '@/lib/utils'
+import { AdminRole } from '@/enums/role'
 
 const bgColors = [
-  "bg-red-300",
-  "bg-green-300",
-  "bg-blue-300",
-  "bg-yellow-300",
-  "bg-purple-300",
-  "bg-pink-300",
+    "bg-red-300",
+    "bg-green-300",
+    "bg-blue-300",
+    "bg-yellow-300",
+    "bg-purple-300",
+    "bg-pink-300",
 ];
 
 const getRandomBgColor = () => {
-  const index = Math.floor(Math.random() * bgColors.length);
-  return bgColors[index];
+    const index = Math.floor(Math.random() * bgColors.length);
+    return bgColors[index];
 };
 
 
@@ -61,7 +62,7 @@ const LayoutClient = ({ children, profile, isUserPro }: { children: React.ReactN
             // }
         }
     }, [pathname, isUserPro])
-    
+
     useEffect(() => {
         setProfile(profile)
     }, [profile, setProfile]);
@@ -193,13 +194,17 @@ const LayoutClient = ({ children, profile, isUserPro }: { children: React.ReactN
                                     </DropdownMenuItem>
                                 </DropdownMenuGroup>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem asChild>
-                                    <Link href="/admin" className="flex items-center">
-                                        <Shield className="mr-2 h-4 w-4" />
-                                        Quản trị
-                                    </Link>
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator />
+                                {
+                                    isPermission(profile?.permissions || [], AdminRole.AdminAccess) && <>
+                                        <DropdownMenuItem asChild>
+                                            <Link href="/admin" className="flex items-center">
+                                                <Shield className="mr-2 h-4 w-4" />
+                                                Quản trị
+                                            </Link>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuSeparator />
+                                    </>
+                                }
                                 <DropdownMenuItem
                                     onClick={handleLogout}
                                 >

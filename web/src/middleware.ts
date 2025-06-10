@@ -2,7 +2,8 @@ import { addDays } from 'date-fns';
 import { NextResponse } from 'next/server'
 import { NextRequest } from 'next/server'
 import { getProfile, getRefreshToken } from './actions/auth.action';
-import { UserRole } from './enums/role';
+import { AdminRole, UserRole } from './enums/role';
+import { isPermission } from './lib/utils';
 
 // This function can be marked `async` if using `await` inside
 export async function middleware(request: NextRequest) {
@@ -72,7 +73,7 @@ export async function middleware(request: NextRequest) {
             return NextResponse.redirect(new URL('/dashboard', request.url));
         }
         const headers = request.headers;
-        headers.set("x-user-pro", (data?.permissions.includes(UserRole.PRO) || "false").toString());
+        headers.set("x-user-pro", (isPermission(data?.permissions || [], [UserRole.PRO, AdminRole.AdminAccess]) || "false").toString());
         return NextResponse.next({
             request: {
                 headers

@@ -43,3 +43,11 @@ export function getScoreColor(score: number): string {
   if (score >= 6) return "text-yellow-500";
   return "text-red-500";
 }
+
+export function isPermission(data: string[], permission: string | string[]) {
+  if (Array.isArray(permission)) {
+    return permission.some(p => data.includes(p));
+  } else {
+    return data.includes(permission);
+  }
+}

@@ -19,4 +19,6 @@ RUN npm install -g @nestjs/cli --save-dev sequelize-cli
 # Copy phần còn lại
 COPY . .
 
+RUN bun run build
+
 ENV HOST=0.0.0.0
