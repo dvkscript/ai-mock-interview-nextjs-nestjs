@@ -8,6 +8,7 @@ import { UserTemporaryPermissionEntity } from "./users_temporary_permissions";
 import { PayEntity } from "src/modules/pay/entities/pay.entity";
 import { PermissionEntity } from "src/modules/users/entities/permission.entity";
 import { RoleEntity } from "./role.entity";
+import { BelongsToManyAddAssociationMixin, BelongsToManyAddAssociationsMixin, BelongsToManyCountAssociationsMixin, BelongsToManyGetAssociationsMixin, BelongsToManyHasAssociationMixin, BelongsToManyHasAssociationsMixin, BelongsToManyRemoveAssociationMixin, BelongsToManyRemoveAssociationsMixin, BelongsToManySetAssociationsMixin } from "sequelize";
 
 @Table({
     tableName: 'users',
@@ -93,4 +94,14 @@ export class UserEntity extends Model<UserEntity> {
 
     @HasMany(() => PayEntity)
     pays: PayEntity[];
+
+    public getRoles!: BelongsToManyGetAssociationsMixin<RoleEntity>;
+    public setRoles!: BelongsToManySetAssociationsMixin<RoleEntity, string>;
+    public addRoles!: BelongsToManyAddAssociationsMixin<RoleEntity, string>;
+    public addRole!: BelongsToManyAddAssociationMixin<RoleEntity, string>;
+    public removeRoles!: BelongsToManyRemoveAssociationsMixin<RoleEntity, string>;
+    public removeRole!: BelongsToManyRemoveAssociationMixin<RoleEntity, string>;
+    public hasRole!: BelongsToManyHasAssociationMixin<RoleEntity, string>;
+    public hasRoles!: BelongsToManyHasAssociationsMixin<RoleEntity, string>;
+    public countRoles!: BelongsToManyCountAssociationsMixin;
 }

@@ -9,6 +9,9 @@ import { CreateRoleInputDto } from './dto/input/create-role.input.dto';
 import { SearchRoleQueryInput } from '../users/dto/query/search-role.query.input';
 import { DeleteRoleInput } from './dto/input/delete-role.input.dto';
 import { UsersRolesParamsDto } from '../users/dto/users-roles-params';
+import { GetUserListQueryReponse } from '../users/dto/query/get-userList.query.response';
+import { GetUserDetailsResponseQuery } from './dto/query/get-userDetails.response.query';
+import { UpdateUserInput } from './dto/input/update-user.input';
 // import { CreateRoleDto } from './dto/create-role.dto';
 // import { UpdateRoleDto } from './dto/update-role.dto';
 // import { CreateUserDto } from './dto/create-user.dto';
@@ -63,17 +66,24 @@ export class AdminController {
   }
 
   @ApiOperation({ summary: 'Get users' })
-  @ApiResponse({ status: 200, description: 'Get users success' })
+  @ApiResponse({ status: 200, description: 'Get users success', type: GetUserListQueryReponse, isArray: true })
   @Get("/users")
   async getUsers(@Query() searchParams: UsersRolesParamsDto) {
     return await this.adminService.getUsers(searchParams);
   }
 
   @ApiOperation({ summary: 'Get user by id' })
-  @ApiResponse({ status: 200, description: 'Get user by id success' })
+  @ApiResponse({ status: 200, description: 'Get user by id success', type: GetUserDetailsResponseQuery })
   @Get("/user/:userId")
   async getUserById(@Param("userId") userId: string) {
     return await this.adminService.getUser(userId);
+  }
+
+  @ApiOperation({ summary: 'Update user' })
+  @ApiResponse({ status: 200, description: 'Update user success' })
+  @Put("/user/:userId")
+  async updateUser(@Param("userId") userId: string, @Body() body: UpdateUserInput) {
+    return await this.adminService.updateUser(userId, body);
   }
 
 

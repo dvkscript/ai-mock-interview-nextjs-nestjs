@@ -10,6 +10,8 @@ import { RoleEntity } from '../users/entities/role.entity';
 import { UserRepository } from '../users/repositories/user.repository';
 import { UsersRolesParamsDto } from '../users/dto/users-roles-params';
 import { GetUserListQueryReponse } from '../users/dto/query/get-userList.query.response';
+import { GetUserDetailsResponseQuery } from './dto/query/get-userDetails.response.query';
+import { UpdateUserInput } from './dto/input/update-user.input';
 
 
 @Injectable()
@@ -136,5 +138,40 @@ export class AdminService {
 
     async getUser(userId: string) {
         const user = await this.userRepository.getUserDetails(userId);
+
+        if (!user) {
+            throw new NotFoundException('User not found');
+        }
+
+        return new GetUserDetailsResponseQuery(user);
+    }
+
+    async updateUser(userId: string, body: UpdateUserInput) {
+        const user = await this.userRepository.findByPk(userId);
+
+        if (!user) {
+            throw new NotFoundException('User not found');
+        }
+
+        return await this.databaseService.transaction(async (transaction) => {
+            await this.userRepository.update({
+                id: userId
+            }, {
+                fullName: body.fullName,
+                email: body.email,
+                password: body.password || "",
+            }, {
+                transaction
+            });
+            if (body.roles.length > 0) {
+                await user.setRoles(body.roles, {
+                    transaction
+                });
+            }
+
+            return {
+                id: userId
+            }
+        })
     }
 }

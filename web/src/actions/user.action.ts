@@ -1,7 +1,9 @@
 "use server"
 import responseAPI from "@/lib/api/response.api";
-import { UserProvider } from "@/lib/api/Types/user";
+import { Role, UserProvider } from "@/lib/api/Types/user";
 import defaultApi from "@/lib/axios/default";
+import { TUpdateUser } from "@/lib/validators/update-user.validator";
+import { revalidatePath } from "next/cache";
 
 export type GetUserAndCountAll = {
     count: number;
@@ -28,5 +30,38 @@ export const getUserAndCountAll = responseAPI.catchError(
         })
 
         return responseAPI.success<GetUserAndCountAll>(res);
+    }
+)
+
+export type GetUserDetail = {
+    id: string;
+    fullName: string;
+    email: string;
+    createdAt: Date;
+    updatedAt: Date;
+    thumbnail?: string;
+    roles: Role[];
+}
+
+export const getUserDetail = responseAPI.catchError(
+    async (userId: string) => {
+        const res = await defaultApi.get(`/admin/user/${userId}`);
+
+        return responseAPI.success<GetUserDetail>(res);
+    }
+)
+
+export const updateUser = responseAPI.catchError(
+    async (userId: string, body: TUpdateUser) => {
+        const res = await defaultApi.put(`/admin/user/${userId}`, {
+            ...body,
+            password: body.password || undefined,
+            confirmPassword: body.confirmPassword || undefined
+        });
+
+        if (res.data) {
+            revalidatePath("/")
+        }
+        return responseAPI.success<{ id: string }>(res);
     }
 )

@@ -70,6 +70,17 @@ export const getRole = responseAPI.catchError(
     }
 )
 
+export type GetRoleAll = Role[]
+export const getRoleAll = responseAPI.catchError(
+    async () => {
+        const res = await defaultApi.get("/roles");
+
+        return responseAPI.success<GetRoleAll>({
+            data: res.data
+        })
+    }
+)
+
 export const updateRole = responseAPI.catchError(
     async (roleId: string, body: TCreateRole) => {
         const res = await defaultApi.put(`/admin/role/${roleId}`, body);

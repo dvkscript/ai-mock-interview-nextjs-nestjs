@@ -20,6 +20,7 @@ import dayjs from "@/lib/utils/dayjs"
 import { useSearchParams } from "next/navigation"
 import useDebounce from "@/hooks/useDebounce"
 import { useRouter } from "next-nprogress-bar"
+import Link from "next/link"
 
 interface UserClientProps {
   data: GetUserAndCountAll
@@ -152,8 +153,10 @@ export default function UserClient({
                       {user.roles.length === 0 ? <span className="text-sm text-gray-500">
                         Không có
                       </span> : user.roles.map((r, index) => {
-                        return <Badge key={r.id} className={`${badgeColors[index % badgeColors.length]} text-nowrap max-w-20`}>
-                          {r.name}
+                        return <Badge key={r.id} className={`${badgeColors[index % badgeColors.length]} px-2 max-w-96`}>
+                          <span className="block w-full truncate">
+                            {r.name}
+                          </span>
                         </Badge>
                       })}
                     </TableCell>
@@ -187,7 +190,11 @@ export default function UserClient({
                           <DropdownMenuLabel>Hành động</DropdownMenuLabel>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem>Xem chi tiết</DropdownMenuItem>
-                          <DropdownMenuItem>Chỉnh sửa</DropdownMenuItem>
+                          <DropdownMenuItem asChild>
+                            <Link href={`/admin/users/${user.id}/edit`}>
+                              Chỉnh sửa
+                            </Link>
+                          </DropdownMenuItem>
                           <DropdownMenuItem>Đổi mật khẩu</DropdownMenuItem>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem className="text-red-600">

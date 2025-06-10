@@ -174,13 +174,25 @@ export class UserRepository extends RepositoryBase<UserEntity> {
                 {
                     model: RoleEntity,
                     required: false,
+                },
+                {
+                    model: UserTemporaryPermissionEntity,
+                    required: false,
                     include: [
                         {
                             model: PermissionEntity,
                             required: false,
                         }
-                    ]
-                },
+                    ],
+                    where: {
+                        startTime: {
+                            [Op.lte]: new Date()
+                        },
+                        endTime: {
+                            [Op.gt]: new Date()
+                        }
+                    }
+                }
             ]
         })
     }
