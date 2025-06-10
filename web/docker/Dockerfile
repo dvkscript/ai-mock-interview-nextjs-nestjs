@@ -15,4 +15,6 @@ RUN bun install
 # Copy phần còn lại
 COPY . .
 
+RUN bun run build
+
 ENV HOST=0.0.0.0
