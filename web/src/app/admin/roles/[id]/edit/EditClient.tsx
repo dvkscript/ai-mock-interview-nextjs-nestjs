@@ -253,7 +253,7 @@ const EditClient: React.FC<EditClientProps> = ({
                                 inputSubmitRef.current.click();
                             }}
                         >
-                            Xóa
+                            Sửa
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>

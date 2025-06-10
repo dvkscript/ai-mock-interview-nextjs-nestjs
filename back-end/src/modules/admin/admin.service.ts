@@ -54,7 +54,7 @@ export class AdminService {
                 ...permissions,
                 ...createdPermissions || []
             ];
-
+            
             await role.setPermissions(allPermissions, { transaction });
 
             return {

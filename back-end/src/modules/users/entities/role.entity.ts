@@ -3,6 +3,7 @@ import { PermissionEntity } from "./permission.entity";
 import { UserEntity } from "src/modules/users/entities/user.entity";
 import { UserRoleEntity } from "src/modules/users/entities/user_role.entity";
 import { RolePermissionEntity } from "./role_permission.entity";
+import { BelongsToManySetAssociationsMixin } from "sequelize";
 
 @Table({
     tableName: 'roles',
@@ -44,6 +45,6 @@ export class RoleEntity extends Model<RoleEntity> {
 
     @BelongsToMany(() => PermissionEntity, () => RolePermissionEntity)
     permissions: PermissionEntity[];
-    
-    public setPermissions!: (permissions: PermissionEntity[] | string[], options?: AssociationActionOptions) => Promise<void>;
+
+    public setPermissions!: BelongsToManySetAssociationsMixin<PermissionEntity, string>;
 }
