@@ -41,8 +41,6 @@ const EditClient: React.FC<EditClientProps> = ({
 
     const onSubmit = useCallback((data: TCreateRole) => {
         startTransition(async () => {
-            console.log(data);
-            
             const res = await updateRole(roleId, data);
             if (!res.ok) {
                 toast.error(res.message)

@@ -36,7 +36,7 @@ export class AdminService {
         const newPermissions = body.permissions.filter((p) => !permissions.find(item => item.value === p)).map(p => ({ value: p }));
 
         return await this.databaseService.transaction(async (transaction) => {
-            const [role, permissions] = await Promise.all([
+            const [role, createdPermissions] = await Promise.all([
                 this.roleRepository.create({
                     name: body.name,
                 }, {
@@ -49,6 +49,13 @@ export class AdminService {
             if (!role) {
                 throw new ConflictException('Role already exists');
             }
+
+            const allPermissions = [
+                ...permissions,
+                ...createdPermissions
+            ];
+
+            await role.setPermissions(allPermissions, { transaction });
 
             return {
                 id: role.id,

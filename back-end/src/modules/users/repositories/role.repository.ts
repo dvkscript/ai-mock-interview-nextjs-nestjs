@@ -13,7 +13,6 @@ export class RoleRepository extends RepositoryBase<RoleEntity> {
 
     async getRoleAndCountAll(searchParams: SearchRoleQueryInput) {
         const { q, limit, page } = searchParams;
-        console.log(limit,1111111111111111);
         
         const offset = limit === -1 ? undefined : (page - 1) * limit;
         

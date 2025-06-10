@@ -20,7 +20,6 @@ export class RolesGuard implements CanActivate {
       ROLES_DECORATOR,
       [context.getHandler(), context.getClass()]
     );
-    console.log(requiredRoles);
     
     if (!requiredRoles || requiredRoles.length === 0) return true;
 

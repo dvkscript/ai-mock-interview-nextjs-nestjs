@@ -305,7 +305,6 @@ export default function EditUserClient({
                                 isDisable={isDisable}
                                 className="h-10"
                                 onChange={(value) => {
-                                  console.log(value);
                                   onChange(value)
                                 }}
                                 value={value}
