@@ -332,4 +332,12 @@ export class JobsService {
     async getAnalysis(userId: string, params: PaginationDto) {
         return await this.jobRepository.getJobAnalysis(params, userId);
     }
+
+    async totalCount() {
+        return await this.jobRepository.count();
+    }
+
+    async feedbackCount() {
+        return await this.jobFeedbackRepository.count();
+    }
 }

@@ -4,12 +4,14 @@ import { AdminController } from './admin.controller';
 import { AuthModule } from '../auth/auth.module';
 import { DatabaseModule } from '../database/database.module';
 import { UsersModule } from '../users/users.module';
+import { JobsModule } from '../jobs/jobs.module';
 
 @Module({
   imports: [
     AuthModule,
     DatabaseModule,
-    UsersModule
+    UsersModule,
+    JobsModule
   ],
   controllers: [AdminController],
   providers: [

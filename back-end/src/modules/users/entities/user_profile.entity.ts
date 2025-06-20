@@ -4,7 +4,7 @@ import { UserEntity } from "./user.entity";
 @Table({
     tableName: 'user_profiles',
 })
-export class UserProfileEntity extends Model<UserProfileEntity>  {
+export class UserProfileEntity extends Model<UserProfileEntity> {
     @Column({
         type: DataType.UUID,
         defaultValue: DataType.UUIDV4,
@@ -18,6 +18,13 @@ export class UserProfileEntity extends Model<UserProfileEntity>  {
         allowNull: true,
     })
     thumbnail: string;
+
+    @Column({
+        type: DataType.STRING,
+        allowNull: true,
+        field: 'thumbnail_id',
+    })
+    thumbnailId: string;
 
     @ForeignKey(() => UserEntity)
     @Column({

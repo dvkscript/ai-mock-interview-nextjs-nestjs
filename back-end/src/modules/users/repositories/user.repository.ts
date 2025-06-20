@@ -196,4 +196,28 @@ export class UserRepository extends RepositoryBase<UserEntity> {
             ]
         })
     }
+
+    async getUserWithRoles(userId: string) {
+        return await this.findByPk(userId, {
+            rejectOnEmpty: false,
+            include: [
+                {
+                    model: RoleEntity,
+                    required: false,
+                }
+            ]
+        })
+    }
+
+    async getUserWithProfile(userId: string) {
+        return await this.findByPk(userId, {
+            rejectOnEmpty: false,
+            include: [
+                {
+                    model: UserProfileEntity,
+                    required: false,
+                }
+            ]
+        })
+    }
 }

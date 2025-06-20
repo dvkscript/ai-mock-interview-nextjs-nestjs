@@ -2,6 +2,7 @@
 import responseAPI from "@/lib/api/response.api";
 import { Role, UserProvider } from "@/lib/api/Types/user";
 import defaultApi from "@/lib/axios/default";
+import { TUpdateProfile } from "@/lib/validators/update-profile";
 import { TUpdateUser } from "@/lib/validators/update-user.validator";
 import { revalidatePath } from "next/cache";
 
@@ -65,3 +66,22 @@ export const updateUser = responseAPI.catchError(
         return responseAPI.success<{ id: string }>(res);
     }
 )
+
+export const updateProfile = responseAPI.catchError(
+    async (body: Partial<TUpdateProfile & { thumbnail: string, thumbnailId: string }>) => {
+        const res = await defaultApi.patch(`/user/profile`, {
+            ...body,
+        });
+
+        if (res.data) {
+            revalidatePath("/")
+        }
+
+        return responseAPI.success(res);
+    }
+)
+
+export const getUserTest = responseAPI.catchError(async () => {
+    const res= await defaultApi.patch("/user/profile");
+    return responseAPI.success(res);
+})

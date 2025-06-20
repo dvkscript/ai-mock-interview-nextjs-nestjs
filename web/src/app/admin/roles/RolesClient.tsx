@@ -15,6 +15,7 @@ import {
     Table,
     TableBody,
     TableCell,
+    TableFooter,
     TableHead,
     TableHeader,
     TableRow,
@@ -28,9 +29,11 @@ import { useRouter } from "next-nprogress-bar"
 import { useSearchParams } from "next/navigation"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog"
 import { toast } from "sonner"
+import { PaginationWithLinks } from "@/components/ui/pagination-with-links"
 
 interface RolesClientProps {
     data: GetRoleAndCountAll
+    limit: string
 }
 
 const columns = [
@@ -43,12 +46,17 @@ const columns = [
 
 const RolesClient: React.FC<RolesClientProps> = ({
     data,
+    limit
 }) => {
     const searchParams = useSearchParams();
     const [search, setSearch] = useState(searchParams.get("q") || "");
     const searchDebounce = useDebounce(search, 400);
     const router = useRouter();
-    const [selectDelete, setSelectDelete] = useState<GetRoleAndCountAll["rows"][number] | null>(null)
+    const [selectDelete, setSelectDelete] = useState<GetRoleAndCountAll["rows"][number] | null>(null);
+
+    const page = parseInt(searchParams.get("page") || "1");
+    const pageSize = parseInt(limit);
+
 
     const getTimeDisplay = useCallback((date: Date) => {
         const now = dayjs();
@@ -124,7 +132,7 @@ const RolesClient: React.FC<RolesClientProps> = ({
                                 {data.rows.length === 0 ?
                                     <>
                                         <TableRow>
-                                            <TableCell colSpan={columns.length} className="text-2xl">
+                                            <TableCell colSpan={columns.length} className="text-2xl text-center p-5">
                                                 Không có dữ liệu
                                             </TableCell>
                                         </TableRow>
@@ -176,6 +184,17 @@ const RolesClient: React.FC<RolesClientProps> = ({
                                     </>
                                 }
                             </TableBody>
+                            {
+                                data.rows.length > 0 && (
+                                    <TableFooter>
+                                        <TableRow>
+                                            <TableCell colSpan={columns.length}>
+                                                <PaginationWithLinks page={page} pageSize={pageSize} totalCount={data.count} />
+                                            </TableCell>
+                                        </TableRow>
+                                    </TableFooter>
+                                )
+                            }
                         </Table>
                     </div>
                 </CardContent>

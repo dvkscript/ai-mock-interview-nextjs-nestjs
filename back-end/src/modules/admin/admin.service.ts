@@ -6,12 +6,12 @@ import { DatabaseService } from '../database/database.service';
 import { CreateRoleInputDto } from './dto/input/create-role.input.dto';
 import { SearchRoleQueryInput } from '../users/dto/query/search-role.query.input';
 import { GetRoleResponseQuery } from './dto/query/get-role.response.query';
-import { RoleEntity } from '../users/entities/role.entity';
 import { UserRepository } from '../users/repositories/user.repository';
 import { UsersRolesParamsDto } from '../users/dto/users-roles-params';
 import { GetUserListQueryReponse } from '../users/dto/query/get-userList.query.response';
 import { GetUserDetailsResponseQuery } from './dto/query/get-userDetails.response.query';
 import { UpdateUserInput } from './dto/input/update-user.input';
+import { JobsService } from '../jobs/jobs.service';
 
 
 @Injectable()
@@ -23,6 +23,7 @@ export class AdminService {
         private readonly permissionRepository: PermissionRepository,
         @Inject(USER_REPOSITORY)
         private readonly userRepository: UserRepository,
+        private readonly jobService: JobsService,
         private readonly databaseService: DatabaseService,
     ) { }
 
@@ -54,7 +55,7 @@ export class AdminService {
                 ...permissions,
                 ...createdPermissions || []
             ];
-            
+
             await role.setPermissions(allPermissions, { transaction });
 
             return {
@@ -180,5 +181,19 @@ export class AdminService {
                 id: userId
             }
         })
+    }
+
+    async getAnalysis() {
+        const [userCount, jobCount, feedbackCount] = await Promise.all([
+            this.userRepository.count(),
+            this.jobService.totalCount(),
+            this.jobService.feedbackCount()
+        ]);
+
+        return {
+            userCount,
+            jobCount,
+            feedbackCount
+        }
     }
 }

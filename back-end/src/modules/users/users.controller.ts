@@ -1,9 +1,9 @@
-import { Controller, Get, NotFoundException, Query, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, NotFoundException, Patch, Query, Req, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '../auth/auth.guard';
-import { FindProfileResponseDto } from './dto/find-profile.response.dto';
-import { UsersRolesParamsDto } from './dto/users-roles-params';
+import { UpdateProfile } from './dto/input/update-user.input';
+import { Request } from 'express';
 
 @ApiTags('user')
 @UseGuards(AuthGuard)
@@ -11,4 +11,20 @@ import { UsersRolesParamsDto } from './dto/users-roles-params';
 export class UsersController {
   constructor(private readonly usersService: UsersService) { }
 
+  @ApiOperation({ summary: 'Update user profile' })
+  @ApiResponse({
+    status: 200,
+    description: 'Update user profile successfully',
+  })
+  @Patch("profile")
+  async updateProfile(
+    @Body() body: UpdateProfile,
+    @Req() req: Request
+  ) {
+    const user = req.user!;
+
+    const res = await this.usersService.updateProfile(user.id, body);
+
+    return res;
+  }
 }

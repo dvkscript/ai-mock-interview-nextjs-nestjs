@@ -1,11 +1,12 @@
 import { Provider } from "@nestjs/common";
 import { UserRepository } from "./repositories/user.repository";
-import { PERMISSION_REPOSITORY, ROLE_REPOSITORY, USER_PROVIDER_REPOSITORY, USER_REPOSITORY, USER_TEMPORARY_PERMISSION_REPOSITORY, USER_TOKEN_REPOSITORY } from "./user.di-tokens";
+import { PERMISSION_REPOSITORY, ROLE_REPOSITORY, USER_PROFILE_REPOSITORY, USER_PROVIDER_REPOSITORY, USER_REPOSITORY, USER_TEMPORARY_PERMISSION_REPOSITORY, USER_TOKEN_REPOSITORY } from "./user.di-tokens";
 import { UserProviderRepository } from "./repositories/user_provider.repository";
 import { UserTokenRepository } from "./repositories/user_token.repository";
 import { UserTemporaryPermissionRepository } from "./repositories/user_temporary_permission.repository";
 import { RoleRepository } from "./repositories/role.repository";
 import { PermissionRepository } from "./repositories/permission.repository";
+import { UserProfileRepository } from "./repositories/user_profile.repository";
 
 export const userProviders: Provider[] = [
     {
@@ -31,5 +32,9 @@ export const userProviders: Provider[] = [
     {
         provide: PERMISSION_REPOSITORY,
         useClass: PermissionRepository,
+    },
+    {
+        provide: USER_PROFILE_REPOSITORY,
+        useClass: UserProfileRepository,
     },
 ]

@@ -4,7 +4,7 @@ import Icons from '@/components/common/Icons'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Button } from '@/components/ui/button'
-import { BellIcon, CreditCardIcon, LogOutIcon, UserCircleIcon, Settings, History, BarChart, HelpCircle, BookOpen, Shield } from 'lucide-react'
+import { BellIcon, CreditCardIcon, LogOutIcon, Settings, History, BarChart, HelpCircle, BookOpen, Shield, Check } from 'lucide-react'
 import Link from 'next/link'
 import React, { useCallback, useEffect } from 'react'
 import { GetProfile, logout } from '@/actions/auth.action'
@@ -16,6 +16,7 @@ import { setCookie } from '@/lib/utils/cookie'
 import { redirect, usePathname } from 'next/navigation'
 import { cn, isPermission } from '@/lib/utils'
 import { AdminRole } from '@/enums/role'
+import { Badge } from '@/components/ui/badge'
 
 const bgColors = [
     "bg-red-300",
@@ -102,12 +103,19 @@ const LayoutClient = ({ children, profile, isUserPro }: { children: React.ReactN
                         </Button>
                         <DropdownMenu>
                             <DropdownMenuTrigger className='select-none outline-none'>
-                                <Avatar className="size-9 ring-2 ring-blue-500/20 hover:ring-blue-500/40 transition-all">
-                                    <AvatarImage src={profile?.thumbnail} alt={profile?.fullName} />
-                                    <AvatarFallback className={cn("rounded-lg", randomColor)}>
-                                        {profile?.fullName.charAt(0).toUpperCase()}
-                                    </AvatarFallback>
-                                </Avatar>
+                                <div className='relative'>
+                                    <Avatar className="size-9 ring-2 ring-blue-500/20 hover:ring-blue-500/40 transition-all">
+                                        <AvatarImage src={profile?.thumbnail} alt={profile?.fullName} />
+                                        <AvatarFallback className={cn("rounded-lg", randomColor)}>
+                                            {profile?.fullName.charAt(0).toUpperCase()}
+                                        </AvatarFallback>
+                                    </Avatar>
+                                    {isUserPro && (
+                                        <Badge className='absolute bottom-0 right-0 translate-x-1/5 translate-y-1/5 rounded-full bg-blue-500 size-4 p-0.5'>
+                                            <Check className='size-full' />
+                                        </Badge>
+                                    )}
+                                </div>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent
                                 className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
@@ -119,8 +127,8 @@ const LayoutClient = ({ children, profile, isUserPro }: { children: React.ReactN
                                     <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                                         <Avatar className="h-8 w-8 rounded-lg">
                                             <AvatarImage src={profile?.thumbnail} alt={"@shadcn"} />
-                                            <AvatarFallback className="rounded-lg">
-                                                Avatar
+                                            <AvatarFallback className={cn("rounded-lg", randomColor)}>
+                                                {profile?.fullName.charAt(0).toUpperCase()}
                                             </AvatarFallback>
                                         </Avatar>
                                         <div className="grid flex-1 text-left text-sm leading-tight">
@@ -135,12 +143,6 @@ const LayoutClient = ({ children, profile, isUserPro }: { children: React.ReactN
                                 </DropdownMenuLabel>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuGroup>
-                                    <DropdownMenuItem asChild>
-                                        <Link href="/profile" className="flex items-center">
-                                            <UserCircleIcon className="mr-2 h-4 w-4" />
-                                            Hồ sơ
-                                        </Link>
-                                    </DropdownMenuItem>
                                     {
                                         isUserPro && (
                                             <DropdownMenuItem asChild>

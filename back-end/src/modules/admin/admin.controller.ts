@@ -12,16 +12,10 @@ import { UsersRolesParamsDto } from '../users/dto/users-roles-params';
 import { GetUserListQueryReponse } from '../users/dto/query/get-userList.query.response';
 import { GetUserDetailsResponseQuery } from './dto/query/get-userDetails.response.query';
 import { UpdateUserInput } from './dto/input/update-user.input';
-// import { CreateRoleDto } from './dto/create-role.dto';
-// import { UpdateRoleDto } from './dto/update-role.dto';
-// import { CreateUserDto } from './dto/create-user.dto';
-// import { UpdateUserDto } from './dto/update-user.dto';
-// import { PaginationDto } from '../jobs/dto/query/pagination.dto';
 
 @ApiTags('admin')
+@Roles(AdminRole.AdminAccess)
 @UseGuards(AuthGuard)
-// @Roles(AdminRole.AdminAccess)
-// @UseGuards(RolesGuard)
 @Controller('admin')
 export class AdminController {
   constructor(
@@ -30,6 +24,7 @@ export class AdminController {
 
   @ApiOperation({ summary: 'Create role' })
   @ApiResponse({ status: 201, description: 'Create role success' })
+  @Roles(AdminRole.RoleCreate)
   @Post("/role")
   async createRole(@Body() body: CreateRoleInputDto) {
     return await this.adminService.createRole(body);
@@ -37,6 +32,7 @@ export class AdminController {
 
   @ApiOperation({ summary: 'Get role' })
   @ApiResponse({ status: 200, description: 'Get role success' })
+  @Roles(AdminRole.RoleRead)
   @Get("/roles")
   async getRoleAndCountAll(@Query() searchParams: SearchRoleQueryInput) {
     const res = await this.adminService.getRoleAndCountAll(searchParams);
@@ -46,6 +42,7 @@ export class AdminController {
 
   @ApiOperation({ summary: 'Delete role' })
   @ApiResponse({ status: 200, description: 'Delete role success' })
+  @Roles(AdminRole.RoleDelete)
   @Delete("/role")
   async deleteRole(@Body() body: DeleteRoleInput) {
     return await this.adminService.deleteRole(body.id);
@@ -53,6 +50,7 @@ export class AdminController {
 
   @ApiOperation({ summary: 'Get role by id' })
   @ApiResponse({ status: 200, description: 'Get role by id success' })
+  @Roles(AdminRole.RoleRead)
   @Get("/role/:roleId")
   async getRoleById(@Param("roleId") roleId: string) {
     return await this.adminService.getRole(roleId);
@@ -60,6 +58,7 @@ export class AdminController {
 
   @ApiOperation({ summary: 'Update role' })
   @ApiResponse({ status: 200, description: 'Update role success' })
+  @Roles(AdminRole.RoleUpdate)
   @Put("/role/:roleId")
   async updateRole(@Param("roleId") roleId: string, @Body() body: CreateRoleInputDto) {
     return await this.adminService.updateRole(roleId, body);
@@ -67,6 +66,7 @@ export class AdminController {
 
   @ApiOperation({ summary: 'Get users' })
   @ApiResponse({ status: 200, description: 'Get users success', type: GetUserListQueryReponse, isArray: true })
+  @Roles(AdminRole.UserRead)
   @Get("/users")
   async getUsers(@Query() searchParams: UsersRolesParamsDto) {
     return await this.adminService.getUsers(searchParams);
@@ -74,6 +74,7 @@ export class AdminController {
 
   @ApiOperation({ summary: 'Get user by id' })
   @ApiResponse({ status: 200, description: 'Get user by id success', type: GetUserDetailsResponseQuery })
+  @Roles(AdminRole.UserRead)
   @Get("/user/:userId")
   async getUserById(@Param("userId") userId: string) {
     return await this.adminService.getUser(userId);
@@ -81,6 +82,7 @@ export class AdminController {
 
   @ApiOperation({ summary: 'Update user' })
   @ApiResponse({ status: 200, description: 'Update user success' })
+  @Roles(AdminRole.UserUpdate)
   @Put("/user/:userId")
   async updateUser(@Param("userId") userId: string, @Body() body: UpdateUserInput) {
     return await this.adminService.updateUser(userId, body);
@@ -144,10 +146,10 @@ export class AdminController {
   //   return await this.adminService.deleteRole(id);
   // }
 
-  // @ApiOperation({ summary: 'Lấy thống kê tổng quan' })
-  // @ApiResponse({ status: 200, description: 'Trả về thống kê tổng quan' })
-  // @Get('analysis')
-  // async getAnalysis() {
-  //   return await this.adminService.getAnalysis();
-  // }
+  @ApiOperation({ summary: 'Lấy thống kê tổng quan' })
+  @ApiResponse({ status: 200, description: 'Trả về thống kê tổng quan' })
+  @Get('analysis')
+  async getAnalysis() {
+    return await this.adminService.getAnalysis();
+  }
 }

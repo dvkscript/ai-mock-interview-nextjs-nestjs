@@ -12,7 +12,8 @@ interface RolesPageProps {
 export default async function RolesPage({
   searchParams
 }: RolesPageProps) {
-  const { limit = "10", page = "1", ...rest } = await searchParams;
+  const limit = "10"
+  const { page = "1", ...rest } = await searchParams;
 
   const roleRes = await getRoleAndCountAll({
     limit,
@@ -25,6 +26,6 @@ export default async function RolesPage({
   }
 
   return (
-    <RolesClient data={roleRes.data} />
+    <RolesClient data={roleRes.data} limit={limit} />
   )
 } 

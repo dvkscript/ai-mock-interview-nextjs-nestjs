@@ -38,5 +38,8 @@ const providers = [
     JobsService,
     JobListener
   ],
+  exports: [
+    JobsService
+  ]
 })
 export class JobsModule { }

@@ -1,12 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { PERMISSION_REPOSITORY, USER_PROVIDER_REPOSITORY, USER_REPOSITORY, USER_TEMPORARY_PERMISSION_REPOSITORY, USER_TOKEN_REPOSITORY } from './user.di-tokens';
+import { PERMISSION_REPOSITORY, USER_PROFILE_REPOSITORY, USER_PROVIDER_REPOSITORY, USER_REPOSITORY, USER_TEMPORARY_PERMISSION_REPOSITORY, USER_TOKEN_REPOSITORY } from './user.di-tokens';
 import { UserRepository } from './repositories/user.repository';
 import { CreateUserDto } from './dto/create-user.dto';
 import { CreateUserTokenDto } from './dto/create-user_token.dto';
 import { UserProviderRepository } from './repositories/user_provider.repository';
 import { UserTokenRepository } from './repositories/user_token.repository';
 import { DatabaseService } from '../database/database.service';
-import { UserProfileEntity } from './entities/user_profile.entity';
 import { UserTemporaryPermissionRepository } from './repositories/user_temporary_permission.repository';
 import { PermissionRepository } from './repositories/permission.repository';
 import { PeriodPayInput } from '../pay/dto/create-pay.input.dto';
@@ -15,6 +14,10 @@ import { Op } from 'sequelize';
 import * as dayjs from 'dayjs';
 import { UsersRolesParamsDto } from './dto/users-roles-params';
 import { GetUserListQueryReponse } from './dto/query/get-userList.query.response';
+import { UpdateProfile } from './dto/input/update-user.input';
+import { UserProfileRepository } from './repositories/user_profile.repository';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { FILE_DELETE } from './user.listener';
 
 
 @Injectable()
@@ -30,7 +33,10 @@ export class UsersService {
         private readonly userTemporaryPermissionRepository: UserTemporaryPermissionRepository,
         @Inject(PERMISSION_REPOSITORY)
         private readonly permissionRepository: PermissionRepository,
+        @Inject(USER_PROFILE_REPOSITORY)
+        private readonly userProfileRepository: UserProfileRepository,
         private readonly databaseService: DatabaseService,
+        private readonly eventEmitter: EventEmitter2
     ) { }
 
     async createUserToken(token: string, userId: string) {
@@ -148,5 +154,63 @@ export class UsersService {
                 return new GetUserListQueryReponse(row);
             })
         }
+    }
+
+    async getRoleNamesByUserId(userId: string) {
+        const res = await this.userRepository.getUserWithRoles(userId);
+
+        const userRoles = res?.roles || [];
+
+        return userRoles.map(r => r.name);
+    }
+
+    async updateProfile(userId: string, body: UpdateProfile) {
+        return await this.databaseService.transaction(async (transaction) => {
+            const { thumbnail, thumbnailId, fullName } = body;
+
+            if (!!fullName) {
+                await this.userRepository.update({
+                    id: userId
+                }, {
+                    fullName
+                }, {
+                    transaction
+                })
+            };
+            if (thumbnail) {
+                const profile = await this.userProfileRepository.getProfileByUserId(userId);
+
+                const data: Record<string, string> = {
+                    thumbnail,
+                };
+
+                if (thumbnailId) {
+                    data.thumbnailId = thumbnailId;
+                }
+
+                if (profile) {
+                    await this.userProfileRepository.update({
+                        userId
+                    }, data, {
+                        transaction
+                    });
+
+                    if (profile.thumbnailId) {
+                        this.eventEmitter.emit(FILE_DELETE, profile.thumbnailId)
+                    }
+                } else {
+                    await this.userProfileRepository.create({
+                        userId,
+                        ...data
+                    }, {
+                        transaction
+                    })
+                }
+            };
+
+            return {
+                id: userId
+            }
+        })
     }
 }

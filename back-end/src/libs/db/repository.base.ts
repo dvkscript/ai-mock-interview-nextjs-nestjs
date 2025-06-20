@@ -62,7 +62,7 @@ export abstract class RepositoryBase<T extends Model> {
 
 
     count(
-        where: CountOptions<Attributes<T>>['where'],
+        where?: CountOptions<Attributes<T>>['where'],
         options?: Omit<CountOptions<Attributes<T>>, 'where' | 'group'>
     ) {
         return this.model.count({

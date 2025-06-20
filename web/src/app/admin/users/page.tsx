@@ -30,7 +30,7 @@ const UserPage: React.FC<UserPageProps> = async ({
   }
 
   return (
-    <UserClient data={userRes.data} />
+    <UserClient data={userRes.data} limit={limit} />
   );
 };
 

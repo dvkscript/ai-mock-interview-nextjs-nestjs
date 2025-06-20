@@ -2,7 +2,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { MoreHorizontal, Search, UserPlus } from "lucide-react"
 import {
@@ -21,9 +21,12 @@ import { useSearchParams } from "next/navigation"
 import useDebounce from "@/hooks/useDebounce"
 import { useRouter } from "next-nprogress-bar"
 import Link from "next/link"
+import { cn } from "@/lib/utils"
+import { PaginationWithLinks } from "@/components/ui/pagination-with-links"
 
 interface UserClientProps {
   data: GetUserAndCountAll
+  limit: string
 }
 
 const badgeColors = [
@@ -50,13 +53,24 @@ const badgeColors = [
   "bg-stone-500 text-white",
 ];
 
+const columns = [
+  { id: "name", label: "Tên Người dùng" },
+  { id: "email", label: "Email" },
+  { id: "roles", label: "Vai trò" },
+  { id: "provider", label: "Đăng nhập lần cuối" },
+  { id: "action", label: "" },
+]
+
 export default function UserClient({
-  data
+  data,
+  limit
 }: UserClientProps) {
   const searchParams = useSearchParams();
   const [search, setSearch] = useState(searchParams.get("q") || "");
   const searchDebounce = useDebounce(search, 400);
   const router = useRouter();
+  const page = parseInt(searchParams.get("page") || "1");
+  const pageSize = parseInt(limit);
 
   const getTimeDisplay = useCallback((date: Date) => {
     const now = dayjs();
@@ -119,93 +133,114 @@ export default function UserClient({
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Tên</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Vai trò</TableHead>
-                  <TableHead>Đăng nhập lần cuối</TableHead>
-                  <TableHead className="w-[50px]"></TableHead>
+                  {
+                    columns.map((c) => {
+                      return <TableHead className={cn(c.id === "action" && "w-[50px]")} key={c.id}>
+                        {c.label}
+                      </TableHead>
+                    })
+                  }
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {data.rows.map((user) => (
-                  <TableRow key={user.id}>
-                    <TableCell>
-                      <div className="flex items-center justify-start gap-2">
-                        <Avatar className="rounded-md size-12">
-                          <AvatarImage
-                            alt={user.fullName}
-                            src={user.thumbnail}
-                            className="rounded-lg"
-                          />
-                          <AvatarFallback className="rounded-lg">
-                            {
-                              user.fullName.charAt(0).toUpperCase()
-                            }
-                          </AvatarFallback>
-                        </Avatar>
-                        <span>
-                          {user.fullName}
-                        </span>
-                      </div>
-                    </TableCell>
-                    <TableCell>{user.email}</TableCell>
-                    <TableCell className="flex-wrap flex gap-3 items-center justify-start h-full">
-                      {user.roles.length === 0 ? <span className="text-sm text-gray-500">
-                        Không có
-                      </span> : user.roles.map((r, index) => {
-                        return <Badge key={r.id} className={`${badgeColors[index % badgeColors.length]} px-2 max-w-96`}>
-                          <span className="block w-full truncate">
-                            {r.name}
+                {data.rows.length > 0 ? <>
+                  {data.rows.map((user) => (
+                    <TableRow key={user.id}>
+                      <TableCell>
+                        <div className="flex items-center justify-start gap-2">
+                          <Avatar className="rounded-md size-12">
+                            <AvatarImage
+                              alt={user.fullName}
+                              src={user.thumbnail}
+                              className="rounded-lg"
+                            />
+                            <AvatarFallback className="rounded-lg">
+                              {
+                                user.fullName.charAt(0).toUpperCase()
+                              }
+                            </AvatarFallback>
+                          </Avatar>
+                          <span>
+                            {user.fullName}
                           </span>
-                        </Badge>
-                      })}
-                    </TableCell>
-                    <TableCell>
-                      {
-                        !user.provider ?
-                          <>
-                            <span className="text-sm text-gray-400 italic">Không có provider</span>
-                          </>
-                          :
-                          <>
-                            <div className="space-y-1">
-                              <div className="font-medium capitalize">
-                                {user.provider?.name}
+                        </div>
+                      </TableCell>
+                      <TableCell>{user.email}</TableCell>
+                      <TableCell className="flex-wrap flex gap-3 items-center justify-start h-full">
+                        {user.roles.length === 0 ? <span className="text-sm text-gray-500">
+                          Không có
+                        </span> : user.roles.map((r, index) => {
+                          return <Badge key={r.id} className={`${badgeColors[index % badgeColors.length]} px-2 max-w-96`}>
+                            <span className="block w-full truncate">
+                              {r.name}
+                            </span>
+                          </Badge>
+                        })}
+                      </TableCell>
+                      <TableCell>
+                        {
+                          !user.provider ?
+                            <>
+                              <span className="text-sm text-gray-400 italic">Không có provider</span>
+                            </>
+                            :
+                            <>
+                              <div className="space-y-1">
+                                <div className="font-medium capitalize">
+                                  {user.provider?.name}
+                                </div>
+                                <div className="text-sm text-gray-500">
+                                  {getTimeDisplay(user.provider.createdAt)}
+                                </div>
                               </div>
-                              <div className="text-sm text-gray-500">
-                                {getTimeDisplay(user.provider.createdAt)}
-                              </div>
-                            </div>
-                          </>
-                      }
-                    </TableCell>
-                    <TableCell>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>Hành động</DropdownMenuLabel>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem>Xem chi tiết</DropdownMenuItem>
-                          <DropdownMenuItem asChild>
-                            <Link href={`/admin/users/${user.id}/edit`}>
-                              Chỉnh sửa
-                            </Link>
-                          </DropdownMenuItem>
-                          <DropdownMenuItem>Đổi mật khẩu</DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem className="text-red-600">
-                            Xóa
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                            </>
+                        }
+                      </TableCell>
+                      <TableCell>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon">
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>Hành động</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem>Xem chi tiết</DropdownMenuItem>
+                            <DropdownMenuItem asChild>
+                              <Link href={`/admin/users/${user.id}/edit`}>
+                                Chỉnh sửa
+                              </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem>Đổi mật khẩu</DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem className="text-red-600">
+                              Xóa
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </> : <>
+                  <TableRow>
+                    <TableCell colSpan={columns.length} className="text-2xl text-center p-5">
+                      Không có dữ liệu
                     </TableCell>
                   </TableRow>
-                ))}
+                </>}
               </TableBody>
+              {
+                data.rows.length > 0 && (
+                  <TableFooter>
+                    <TableRow>
+                      <TableCell colSpan={columns.length}>
+                        <PaginationWithLinks page={page} pageSize={pageSize} totalCount={data.count} />
+                      </TableCell>
+                    </TableRow>
+                  </TableFooter>
+                )
+              }
             </Table>
           </div>
         </CardContent>

@@ -14,7 +14,7 @@ import {
       const ctx = host.switchToHttp()
       const response = ctx.getResponse()
       const request = ctx.getRequest()
-  
+      
       if (response.headersSent) return;
   
       const status =

@@ -3,13 +3,17 @@ import Container from '@/components/common/Container';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Bell, Lock, Sun, User } from 'lucide-react';
+import { useUserStore } from '@/stores/userStore';
+import { ProfileAvatar } from './_components/ProfileAvatar';
+import { ProfileForm } from './_components/ProfileForm';
 
 export default function SettingsPage() {
+  const { profile } = useUserStore();
+
   return (
     <div className="py-6 sm:px-6 lg:px-8 pt-20 md:pt-6">
       <Container className="max-w-7xl mx-auto px-4 sm:px-0">
@@ -51,35 +55,18 @@ export default function SettingsPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="firstName">Họ</Label>
-                      <Input id="firstName" defaultValue="John" />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="lastName">Tên</Label>
-                      <Input id="lastName" defaultValue="Doe" />
-                    </div>
+                <div className='flex gap-10'>
+                  <div className="flex flex-col items-center px-20">
+                    <ProfileAvatar />
+                    <h2 className="text-xl font-semibold mt-4">
+                      {profile?.fullName}
+                    </h2>
+                    <p className="text-gray-500 dark:text-gray-400">
+                      {profile?.email}
+                    </p>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
-                    <Input id="email" type="email" defaultValue="john.doe@example.com" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="language">Ngôn ngữ</Label>
-                    <Select defaultValue="vi">
-                      <SelectTrigger>
-                        <SelectValue placeholder="Chọn ngôn ngữ" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="vi">Tiếng Việt</SelectItem>
-                        <SelectItem value="en">English</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                  <ProfileForm profile={profile} />
                 </div>
-                <Button>Lưu thay đổi</Button>
               </CardContent>
             </Card>
           </TabsContent>
