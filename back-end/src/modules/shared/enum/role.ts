@@ -16,4 +16,8 @@ export enum AdminRole {
     PaymentCreate = "payment-create",
     PaymentUpdate = "payment-update",
     PaymentDelete = "payment-delete",
+    JobRead = "job-read",
+    JobCreate = "job-create",
+    JobUpdate = "job-update",
+    JobDelete = "job-delete",
 }

@@ -92,6 +92,7 @@ export class AdminController {
 
   @ApiOperation({ summary: "Get Jobs All" })
   @ApiResponse({ status: 200, description: "Get Job All success" })
+  @Roles(AdminRole.JobRead)
   @Get("/jobs")
   async getJobs(
     @Query() params: GetJobsPaginationQuery
@@ -101,6 +102,7 @@ export class AdminController {
 
   @ApiOperation({ summary: "Get Pays All" })
   @ApiResponse({ status: 200, description: "Get Pays All success" })
+  @Roles(AdminRole.PaymentRead)
   @Get("/pays")
   async getPays(
     @Query() params: GetPayWithUserAndCountAllQuery

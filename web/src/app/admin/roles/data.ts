@@ -37,5 +37,15 @@ export const roleFormData = [
       AdminRole.PaymentUpdate,
       AdminRole.PaymentDelete
     ]
-  }
+  },
+  {
+    id: "job",
+    name: "Quản lý Phỏng vấn",
+    data: [
+      AdminRole.JobRead,
+      AdminRole.JobCreate,
+      AdminRole.JobUpdate,
+      AdminRole.JobDelete
+    ]
+  },
 ]

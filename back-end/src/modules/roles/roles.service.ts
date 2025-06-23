@@ -12,10 +12,4 @@ export class RolesService {
     async getRoles() {
         return await this.roleRepository.findAll();
     }
-
-    getRoleNames(userId: string) {
-        const res = this.roleRepository.findAll({
-            
-        })
-    }
 }

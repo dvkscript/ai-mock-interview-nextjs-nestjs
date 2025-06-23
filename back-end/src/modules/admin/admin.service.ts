@@ -19,6 +19,7 @@ import { GetPayWithUserAndCountAllQuery } from '../pay/dto/query/get-payWithUser
 import { GetPaysQueryResponse } from './dto/query/get-pays.query.response';
 import { GetAnalysisQueryResponse } from './dto/query/get-analysis.query.response';
 import { UsersService } from '../users/users.service';
+import { PermissionEntity } from '../users/entities/permission.entity';
 
 
 @Injectable()
@@ -98,16 +99,20 @@ export class AdminService {
     }
 
     async updateRole(roleId: string, body: CreateRoleInputDto) {
-        const permissions = await this.permissionRepository.findAll({
-            where: {
-                value: body.permissions
-            }
-        });
-        const permissionNotFound = body.permissions.filter((p) => !permissions.find(item => item.value === p));
-
         return await this.databaseService.transaction(async (transaction) => {
-            if (permissionNotFound.length > 0) {
-                await this.permissionRepository.bulkCreate(permissionNotFound.map(p => ({ value: p })), {
+            const existingPermissions = await this.permissionRepository.findAll({
+                where: {
+                    value: body.permissions
+                },
+                transaction
+            });
+
+            const permissionNotFoundValues = body.permissions.filter((p) => !existingPermissions.find(item => item.value === p));
+
+            let createdPermissions: PermissionEntity[] = [];
+
+            if (permissionNotFoundValues.length > 0) {
+                createdPermissions = await this.permissionRepository.bulkCreate(permissionNotFoundValues.map(p => ({ value: p })), {
                     transaction
                 });
             }
@@ -118,8 +123,10 @@ export class AdminService {
                 throw new NotFoundException('Role not found');
             }
 
+            const allPermissions = [...existingPermissions, ...createdPermissions];
+
             await Promise.all([
-                role.setPermissions(permissions, {
+                role.setPermissions(allPermissions, {
                     transaction,
                 }),
                 this.roleRepository.update({

@@ -45,7 +45,7 @@ const EditClient: React.FC<EditClientProps> = ({
             if (!res.ok) {
                 toast.error(res.message)
             } else {
-                toast.success("Thêm vai trò thành công")
+                toast.success("Sửa vai trò thành công")
                 form.reset()
             }
         })
@@ -71,9 +71,9 @@ const EditClient: React.FC<EditClientProps> = ({
                     </Button>
                 </Link>
                 <div>
-                    <h1 className="text-3xl font-bold">Thêm vai trò mới</h1>
+                    <h1 className="text-3xl font-bold">Sửa vai trò mới</h1>
                     <p className="text-gray-500 dark:text-gray-400">
-                        Tạo vai trò mới trong hệ thống
+                        Sửa vai trò mới trong hệ thống
                     </p>
                 </div>
             </div>
@@ -119,6 +119,7 @@ const EditClient: React.FC<EditClientProps> = ({
                                         <FormLabel className="flex items-center gap-2">
                                             Quyền hạn
                                         </FormLabel>
+                                        <FormMessage />
                                         <FormControl>
                                             <div className="space-y-4">
                                                 {
@@ -204,7 +205,6 @@ const EditClient: React.FC<EditClientProps> = ({
                                                 }
                                             </div>
                                         </FormControl>
-                                        <FormMessage />
                                     </FormItem>
                                 )}
                             />
@@ -228,7 +228,7 @@ const EditClient: React.FC<EditClientProps> = ({
                                     >Lưu</Button>
                                 </div>
                             </div>
-                            <input type="submit" ref={inputSubmitRef} hidden/>
+                            <input type="submit" ref={inputSubmitRef} hidden />
                         </form>
                     </Form>
                 </CardContent>
