@@ -12,6 +12,13 @@ import { GetUserListQueryReponse } from '../users/dto/query/get-userList.query.r
 import { GetUserDetailsResponseQuery } from './dto/query/get-userDetails.response.query';
 import { UpdateUserInput } from './dto/input/update-user.input';
 import { JobsService } from '../jobs/jobs.service';
+import { GetJobsPaginationQuery } from '../jobs/dto/query/get-jobs.pagination.query';
+import { GetJobsResponseQuery } from './dto/query/get-jobs.response.query';
+import { PayService } from '../pay/pay.service';
+import { GetPayWithUserAndCountAllQuery } from '../pay/dto/query/get-payWithUserAndCountAll.query';
+import { GetPaysQueryResponse } from './dto/query/get-pays.query.response';
+import { GetAnalysisQueryResponse } from './dto/query/get-analysis.query.response';
+import { UsersService } from '../users/users.service';
 
 
 @Injectable()
@@ -25,6 +32,8 @@ export class AdminService {
         private readonly userRepository: UserRepository,
         private readonly jobService: JobsService,
         private readonly databaseService: DatabaseService,
+        private readonly payService: PayService,
+        private readonly userService: UsersService
     ) { }
 
     async createRole(body: CreateRoleInputDto) {
@@ -183,17 +192,51 @@ export class AdminService {
         })
     }
 
-    async getAnalysis() {
-        const [userCount, jobCount, feedbackCount] = await Promise.all([
+    async getAnalysis(limit: string = "5") {
+        const [userCount, jobCount, feedbackCount, payTotalAmount, providers] = await Promise.all([
             this.userRepository.count(),
             this.jobService.totalCount(),
-            this.jobService.feedbackCount()
+            this.jobService.feedbackCount(),
+            this.payService.totalAmount(),
+            this.userService.getUserUptimes(+limit || 5),
         ]);
 
-        return {
+        return new GetAnalysisQueryResponse({
             userCount,
             jobCount,
-            feedbackCount
+            feedbackCount,
+            payTotalAmount,
+            providers
+        });
+    }
+
+    async getJobs(params: GetJobsPaginationQuery) {
+        const res = await this.jobService.getJobsWithUser(params);
+
+        if (!res) {
+            throw new Error("Invalid Server Error")
+        }
+
+        return {
+            count: res.count,
+            rows: res.rows.map(row => {
+                return new GetJobsResponseQuery(row);
+            })
+        }
+    }
+
+    async getPays(params: GetPayWithUserAndCountAllQuery) {
+        const res = await this.payService.getPayWithUserAndCountAll(params);
+
+        if (!res) {
+            throw new Error("Invalid Server Error")
+        }
+
+        return {
+            count: res.count,
+            rows: res.rows.map(row => {
+                return new GetPaysQueryResponse(row);
+            })
         }
     }
 }

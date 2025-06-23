@@ -1,11 +1,10 @@
-import { join } from 'path';
 import { JobQuestionAnswerRepository } from './repositories/job_question_answer.repository';
 import { BadRequestException, HttpException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { JOB_FEEDBACK_REPOSITORY, JOB_QUESTION_ANSWER_REPOSITORY, JOB_QUESTION_REPOSITORY, JOB_REPOSITORY } from './job.di-tokens';
 import { JobRepository } from './repositories/job.respository';
 import { CreateJobRequestDto } from './dto/create-job.request.dto';
 import { GatewayHttpService } from '../shared/http/gateway-http.service';
-import { FeedBackDataPrompt, generateFeedbackPrompt, generateQuestionDefaultPrompt, generateQuestionPrompt, QuestionDataPrompt } from './job.prompt';
+import { FeedBackDataPrompt, generateFeedbackPrompt } from './job.prompt';
 import { extractJSONBlock, safeParseJSON } from 'src/libs/utils/json';
 import { StatusCode } from 'src/libs/exceptions/codes.exception';
 import { FindJobQuestionResponse } from './dto/query/find-job_quesion.reponse';
@@ -15,13 +14,12 @@ import { DatabaseService } from '../database/database.service';
 import { CreateAnswerQuestionResponseDto } from './dto/create-answer_question.reponse';
 import { JobStatus } from '../shared/enum/job-status';
 import { UpdateJobInputDto } from './dto/input/update-job.input.dto';
-import { groupBy, mapValues } from 'src/libs/utils/lodash';
 import { JobFeedbackRepository } from './repositories/job_feedback.repository';
-import { PaginationDto } from './dto/query/pagination.dto';
 import { GenerateTextContentDto } from '../shared/http/dto/generateTextContent.dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { JOB_CREATED } from './job.listener';
 import { CreateJobListenerDto } from './dto/input/create-job.listener.dto';
+import { GetJobsPaginationQuery } from './dto/query/get-jobs.pagination.query';
 
 @Injectable()
 export class JobsService {
@@ -66,7 +64,7 @@ export class JobsService {
             id: jobId
         }, {
             status: JobStatus.CREATING
-        }); 
+        });
 
         if (!jobUpdated) {
             throw new NotFoundException("Job not found", {
@@ -270,8 +268,14 @@ export class JobsService {
         };
     }
 
-    async getJobs(userId: string, params: PaginationDto) {
+    async getJobs(userId: string, params: GetJobsPaginationQuery) {
         const jobs = await this.jobRepository.getJobAndCountAll(params, userId);
+
+        return jobs;
+    }
+
+    async getJobsWithUser(params: GetJobsPaginationQuery) {
+        const jobs = await this.jobRepository.getJobWithUserAndCountAll(params);
 
         return jobs;
     }
@@ -329,7 +333,7 @@ export class JobsService {
             }
         })
     }
-    async getAnalysis(userId: string, params: PaginationDto) {
+    async getAnalysis(userId: string, params: GetJobsPaginationQuery) {
         return await this.jobRepository.getJobAnalysis(params, userId);
     }
 

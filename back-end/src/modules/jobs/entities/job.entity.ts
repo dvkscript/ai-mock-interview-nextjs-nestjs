@@ -1,7 +1,8 @@
-import { Column, DataType, HasMany, HasOne, Max, Min, Model, PrimaryKey, Table } from "sequelize-typescript";
+import { BelongsTo, BelongsToMany, Column, DataType, ForeignKey, HasMany, HasOne, Max, Min, Model, PrimaryKey, Table } from "sequelize-typescript";
 import { JobQuestionEntity } from "./job_question.entity";
 import { JobStatus } from "src/modules/shared/enum/job-status";
 import { JobFeedbackEntity } from "./job_feedback";
+import { UserEntity } from "src/modules/users/entities/user.entity";
 
 @Table({
     tableName: 'jobs',
@@ -78,6 +79,7 @@ export class JobEntity extends Model<JobEntity> {
     })
     status: JobStatus;
 
+    @ForeignKey(() => UserEntity)
     @Column({
         type: DataType.UUID,
         allowNull: false,
@@ -106,4 +108,7 @@ export class JobEntity extends Model<JobEntity> {
 
     @HasOne(() => JobFeedbackEntity, { as: 'feedback', foreignKey: 'jobId' })
     feedback: JobFeedbackEntity;
+
+    @BelongsTo(() => UserEntity)
+    user: UserEntity;
 }

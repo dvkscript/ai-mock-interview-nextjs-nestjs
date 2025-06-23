@@ -5,7 +5,7 @@ import { isUUID } from 'class-validator';
 import { FindJobQuestionResponse } from './dto/query/find-job_quesion.reponse';
 import { CreateAnswerInputDto } from './dto/input/create-answer.input.dto';
 import { UpdateJobInputDto } from './dto/input/update-job.input.dto';
-import { PaginationDto } from './dto/query/pagination.dto';
+import { GetJobsPaginationQuery } from './dto/query/get-jobs.pagination.query';
 import { AuthGuard } from '../auth/auth.guard';
 import { Request } from 'express';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -32,7 +32,7 @@ export class JobsController {
   @ApiResponse({ status: 200, description: 'Trả về thống kê jobs' })
   @Get("analysis")
   async analysis(
-    @Query() paginationDto: PaginationDto,
+    @Query() paginationDto: GetJobsPaginationQuery,
     @Req() req: Request
   ) {
     const user = req.user as any;
@@ -44,7 +44,7 @@ export class JobsController {
   @ApiResponse({ status: 200, description: 'Trả về danh sách jobs' })
   @Get()
   async getJobs(
-    @Query() paginationDto: PaginationDto,
+    @Query() paginationDto: GetJobsPaginationQuery,
     @Req() req: Request
   ) {
     const user = req.user as any;

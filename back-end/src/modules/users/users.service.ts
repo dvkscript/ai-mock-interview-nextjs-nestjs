@@ -213,4 +213,8 @@ export class UsersService {
             }
         })
     }
+
+    async getUserUptimes(limit: number = 5) {
+        return await this.userProviderRepository.getUserUptimes(limit);
+    }
 }

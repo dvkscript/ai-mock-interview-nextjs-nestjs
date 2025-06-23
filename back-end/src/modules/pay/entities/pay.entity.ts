@@ -70,7 +70,7 @@ export class PayEntity extends Model<PayEntity> {
         type: DataType.STRING,
         allowNull: true,
     })
-    description?: string;
+    description: string;
 
     @ForeignKey(() => UserEntity)
     @Column({

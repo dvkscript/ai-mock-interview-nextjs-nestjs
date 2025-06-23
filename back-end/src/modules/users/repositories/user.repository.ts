@@ -114,7 +114,7 @@ export class UserRepository extends RepositoryBase<UserEntity> {
             offset,
             limit,
             order: [
-                ['id', 'DESC']
+                ['createdAt', 'DESC']
             ],
         })
     }

@@ -3,10 +3,11 @@ import AdminDashboardClient from './AdminDashboardClient';
 
 
 export default async function AdminDashboardPage() {
-  const res = await getAdminAnalysis();
+  const res = await getAdminAnalysis("5");
 
-  console.log(res);
-  
+  if (!res.ok || !res.data) {
+    throw new Error(res.status.toString());
+  }
 
-  return <AdminDashboardClient />
+  return <AdminDashboardClient data={res.data} />
 } 

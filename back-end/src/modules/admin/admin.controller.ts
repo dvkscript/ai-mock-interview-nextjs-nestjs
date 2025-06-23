@@ -12,6 +12,8 @@ import { UsersRolesParamsDto } from '../users/dto/users-roles-params';
 import { GetUserListQueryReponse } from '../users/dto/query/get-userList.query.response';
 import { GetUserDetailsResponseQuery } from './dto/query/get-userDetails.response.query';
 import { UpdateUserInput } from './dto/input/update-user.input';
+import { GetJobsPaginationQuery } from '../jobs/dto/query/get-jobs.pagination.query';
+import { GetPayWithUserAndCountAllQuery } from '../pay/dto/query/get-payWithUserAndCountAll.query';
 
 @ApiTags('admin')
 @Roles(AdminRole.AdminAccess)
@@ -20,7 +22,7 @@ import { UpdateUserInput } from './dto/input/update-user.input';
 export class AdminController {
   constructor(
     private readonly adminService: AdminService
-  ) {}
+  ) { }
 
   @ApiOperation({ summary: 'Create role' })
   @ApiResponse({ status: 201, description: 'Create role success' })
@@ -28,7 +30,7 @@ export class AdminController {
   @Post("/role")
   async createRole(@Body() body: CreateRoleInputDto) {
     return await this.adminService.createRole(body);
-  } 
+  }
 
   @ApiOperation({ summary: 'Get role' })
   @ApiResponse({ status: 200, description: 'Get role success' })
@@ -37,7 +39,7 @@ export class AdminController {
   async getRoleAndCountAll(@Query() searchParams: SearchRoleQueryInput) {
     const res = await this.adminService.getRoleAndCountAll(searchParams);
     return res;
-    
+
   }
 
   @ApiOperation({ summary: 'Delete role' })
@@ -88,68 +90,30 @@ export class AdminController {
     return await this.adminService.updateUser(userId, body);
   }
 
+  @ApiOperation({ summary: "Get Jobs All" })
+  @ApiResponse({ status: 200, description: "Get Job All success" })
+  @Get("/jobs")
+  async getJobs(
+    @Query() params: GetJobsPaginationQuery
+  ) {
+    return await this.adminService.getJobs(params);
+  }
 
-
-  // @ApiOperation({ summary: 'Lấy danh sách người dùng' })
-  // @ApiResponse({ status: 200, description: 'Trả về danh sách người dùng với profile và roles' })
-  // @Get('users')
-  // async getUsers(@Query() paginationDto: PaginationDto) {
-  //   return await this.adminService.getUsers(paginationDto);
-  // }
-
-  // @ApiOperation({ summary: 'Tạo người dùng mới' })
-  // @ApiResponse({ status: 201, description: 'Tạo người dùng thành công' })
-  // @Post('users')
-  // async createUser(@Body() createUserDto: CreateUserDto) {
-  //   return await this.adminService.createUser(createUserDto);
-  // }
-
-  // @ApiOperation({ summary: 'Cập nhật thông tin người dùng' })
-  // @ApiResponse({ status: 200, description: 'Cập nhật thành công' })
-  // @Patch('users/:id')
-  // async updateUser(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-  //   return await this.adminService.updateUser(id, updateUserDto);
-  // }
-
-  // @ApiOperation({ summary: 'Xóa người dùng' })
-  // @ApiResponse({ status: 200, description: 'Xóa thành công' })
-  // @Delete('users/:id')
-  // async deleteUser(@Param('id') id: string) {
-  //   return await this.adminService.deleteUser(id);
-  // }
-
-  // @ApiOperation({ summary: 'Lấy danh sách vai trò' })
-  // @ApiResponse({ status: 200, description: 'Trả về danh sách vai trò' })
-  // @Get('roles')
-  // async getRoles(@Query() paginationDto: PaginationDto) {
-  //   return await this.adminService.getRoles(paginationDto);
-  // }
-
-  // @ApiOperation({ summary: 'Tạo vai trò mới' })
-  // @ApiResponse({ status: 201, description: 'Tạo vai trò thành công' })
-  // @Post('roles')
-  // async createRole(@Body() createRoleDto: CreateRoleDto) {
-  //   return await this.adminService.createRole(createRoleDto);
-  // }
-
-  // @ApiOperation({ summary: 'Cập nhật vai trò' })
-  // @ApiResponse({ status: 200, description: 'Cập nhật thành công' })
-  // @Patch('roles/:id')
-  // async updateRole(@Param('id') id: string, @Body() updateRoleDto: UpdateRoleDto) {
-  //   return await this.adminService.updateRole(id, updateRoleDto);
-  // }
-
-  // @ApiOperation({ summary: 'Xóa vai trò' })
-  // @ApiResponse({ status: 200, description: 'Xóa thành công' })
-  // @Delete('roles/:id')
-  // async deleteRole(@Param('id') id: string) {
-  //   return await this.adminService.deleteRole(id);
-  // }
+  @ApiOperation({ summary: "Get Pays All" })
+  @ApiResponse({ status: 200, description: "Get Pays All success" })
+  @Get("/pays")
+  async getPays(
+    @Query() params: GetPayWithUserAndCountAllQuery
+  ) {
+    return await this.adminService.getPays(params);
+  }
 
   @ApiOperation({ summary: 'Lấy thống kê tổng quan' })
   @ApiResponse({ status: 200, description: 'Trả về thống kê tổng quan' })
   @Get('analysis')
-  async getAnalysis() {
-    return await this.adminService.getAnalysis();
+  async getAnalysis(
+    @Query('limit') limit: string
+  ) {
+    return await this.adminService.getAnalysis(limit);
   }
 }

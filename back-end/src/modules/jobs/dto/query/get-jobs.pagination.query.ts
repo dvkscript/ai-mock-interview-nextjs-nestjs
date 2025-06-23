@@ -19,7 +19,7 @@ export enum ScorePagination {
   POOR = "poor"
 }
 
-export class PaginationDto {
+export class GetJobsPaginationQuery {
   @IsOptional()
   @Type(() => Number)
   @IsPositive()

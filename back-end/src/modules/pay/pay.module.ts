@@ -10,11 +10,12 @@ import { PayRepository } from './repositories/pay.repository';
 @Module({
   imports: [SharedModule, AuthModule, SharedModule, UsersModule],
   controllers: [PayController],
-  providers: [PayService, 
+  providers: [PayService,
     {
       provide: PAY_REPOSITORY,
       useClass: PayRepository
     }
   ],
+  exports: [PayService]
 })
 export class PayModule {}

@@ -12,7 +12,7 @@ import {
     SidebarHeader,
     SidebarRail,
 } from "@/components/ui/sidebar"
-import { LayoutDashboardIcon, ShieldCheck, UsersIcon } from "lucide-react"
+import { BadgeDollarSign, CalendarClock, LayoutDashboardIcon, ShieldCheck, UsersIcon } from "lucide-react"
 import { NavMain } from "./nav-main"
 
 const data = {
@@ -36,6 +36,16 @@ const data = {
             title: "Quản lý phân quyền",
             url: "/admin/roles",
             icon: ShieldCheck,
+        },
+        {
+            title: "Quản lý phỏng vấn",
+            url: "/admin/interviews",
+            icon: CalendarClock,
+        },
+        {
+            title: "Quản lý thanh toán",
+            url: "/admin/pays",
+            icon: BadgeDollarSign,
         },
     ],
 }

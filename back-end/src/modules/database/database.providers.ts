@@ -39,7 +39,7 @@ export const databaseProviders = [
                 UserProfileEntity,
                 BlacklistEntity,
                 UserTemporaryPermissionEntity,
-                PayEntity
+                PayEntity,
             ]);
             await sequelize.sync();
             return sequelize;

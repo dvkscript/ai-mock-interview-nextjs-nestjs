@@ -7,6 +7,7 @@ import { UsersService } from '../users/users.service';
 import { PayRepository } from './repositories/pay.repository';
 import { PAY_REPOSITORY } from './user.di-tokens';
 import * as dayjs from 'dayjs';
+import { GetPayWithUserAndCountAllQuery } from './dto/query/get-payWithUserAndCountAll.query';
 
 const sendMailHtml = (
   amount: number,
@@ -118,7 +119,7 @@ export class PayService {
       }
 
       const permissionDate = await this.userService.userActivatePro(user.id, period);
-      
+
       this.mailService.sendMail(user.email, 'Thanh toán thành công!', sendMailHtml(amount, user.fullName, period, permissionDate.startTime, permissionDate.endTime))
 
       return await this.payRepo.create({
@@ -157,5 +158,11 @@ export class PayService {
     return res;
   }
 
-  
+  async getPayWithUserAndCountAll(params: GetPayWithUserAndCountAllQuery) {
+    return await this.payRepo.getPayWithUserAndCountAll(params);
+  }
+
+  async totalAmount() {
+    return await this.payRepo.payTotalAmount();
+  }
 }

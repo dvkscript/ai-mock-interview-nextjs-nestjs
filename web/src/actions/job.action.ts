@@ -5,6 +5,7 @@ import defaultApi from "@/lib/axios/default";
 import { TCreateAnswer } from "@/lib/validators/create-answer.validator";
 import { TGenerateQuestion } from "@/lib/validators/generate-question.validator";
 import { TUpdateJob } from "@/lib/validators/update-job.validator";
+import { revalidatePath } from "next/cache";
 
 export const GenerateQuestion = responseAPI.catchError(
     async (body: TGenerateQuestion) => {
@@ -149,6 +150,9 @@ export const deleteJob = responseAPI.catchError(
     async (id: string) => {
         const res = await defaultApi.delete(`/jobs/${id}`)
 
+        if (res.data) {
+            revalidatePath("/")
+        }
         return responseAPI.success({
             data: res.data
         });

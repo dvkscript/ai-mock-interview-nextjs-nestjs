@@ -9,6 +9,7 @@ import { PayEntity } from "src/modules/pay/entities/pay.entity";
 import { PermissionEntity } from "src/modules/users/entities/permission.entity";
 import { RoleEntity } from "./role.entity";
 import { BelongsToManyAddAssociationMixin, BelongsToManyAddAssociationsMixin, BelongsToManyCountAssociationsMixin, BelongsToManyGetAssociationsMixin, BelongsToManyHasAssociationMixin, BelongsToManyHasAssociationsMixin, BelongsToManyRemoveAssociationMixin, BelongsToManyRemoveAssociationsMixin, BelongsToManySetAssociationsMixin } from "sequelize";
+import { JobEntity } from "src/modules/jobs/entities/job.entity";
 
 @Table({
     tableName: 'users',
@@ -91,6 +92,13 @@ export class UserEntity extends Model<UserEntity> {
         as: "profile"
     })
     profile: UserProfileEntity;
+
+    @HasOne(() => JobEntity, {
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+        as: "job"
+    })
+    job: JobEntity;
 
     @HasMany(() => PayEntity)
     pays: PayEntity[];
