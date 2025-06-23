@@ -10,29 +10,16 @@ import { UserStatistics } from "./_components/UserStatistics";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import dayjs from "@/lib/utils/dayjs";
 import { AreaChart, CartesianGrid, XAxis, YAxis, Tooltip, Area, PieChart, Pie, Cell, Legend, Bar, BarChart, LineChart, Line, ResponsiveContainer } from 'recharts';
+import { GetAdminAnalysis } from "@/actions/admin.action";
 
 interface AdminDashboardClientProps {
-    data: {
-        userCount: number;
-        jobCount: number;
-        feedbackCount: number;
-        payTotalAmount: number;
-        users: Array<{
-            id: string;
-            fullName: string;
-            email: string;
-            thumbnail?: string;
-            provider: {
-                createdAt: string;
-                name: string;
-            };
-        }>;
-    };
+    data: GetAdminAnalysis;
 }
 
 export default function AdminDashboardClient({ data }: AdminDashboardClientProps) {
     const { profile } = useUserStore();
-    const formatTime = useCallback((time: string) => {
+
+    const formatTime = useCallback((time: Date) => {
         return dayjs(time).fromNow();
     }, []);
 
@@ -73,7 +60,7 @@ export default function AdminDashboardClient({ data }: AdminDashboardClientProps
                 icon: TrendingUp,
             },
         ]
-    }, [userCount, jobCount]);
+    }, [userCount, jobCount, feedbackCount, payTotalAmount]);
 
     return (
         <div className="space-y-6">
