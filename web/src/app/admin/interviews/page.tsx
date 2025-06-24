@@ -1,6 +1,8 @@
 import { getAdminJobs } from "@/actions/admin.action";
 import InterviewClient from "./InterviewClient";
 
+export const dynamic = 'force-dynamic';
+
 // interface InterviewsPageProps {
 //   searchParams: Promise<{
 //     page: string;
