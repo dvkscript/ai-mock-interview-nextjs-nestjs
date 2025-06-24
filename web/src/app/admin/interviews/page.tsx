@@ -1,22 +1,20 @@
 import { getAdminJobs } from "@/actions/admin.action";
 import InterviewClient from "./InterviewClient";
 
-export const dynamic = 'force-dynamic';
+interface InterviewsPageProps {
+  searchParams: Promise<{
+    page: string;
+  }>
+}
 
-// interface InterviewsPageProps {
-//   searchParams: Promise<{
-//     page: string;
-//   }>
-// }
-
-export default async function InterviewsPage({ }) {
-  // const { page = "1", ...rest } = await searchParams;
+export default async function Page({ searchParams }: InterviewsPageProps) {
+  const { page = "1", ...rest } = await searchParams;
 
   const limit = "10";
 
   const newSearchParams = {
-    page: "1",
-    // ...rest,
+    page,
+    ...rest,
     limit,
   }
 
