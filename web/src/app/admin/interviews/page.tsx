@@ -3,7 +3,7 @@ import InterviewClient from "./InterviewClient";
 
 interface InterviewsPageProps {
   searchParams: Promise<{
-    page: string;
+    page?: string;
   }>
 }
 
