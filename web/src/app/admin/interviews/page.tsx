@@ -2,19 +2,19 @@ import { getAdminJobs } from "@/actions/admin.action";
 import InterviewClient from "./InterviewClient";
 
 interface InterviewsPageProps {
-  searchParams?: Promise<{
+  searchParams: Promise<{
     page: string;
   }>
 }
 
-export default async function InterviewsPage(props: InterviewsPageProps) {
+export default async function InterviewsPage({ searchParams }: InterviewsPageProps) {
+  const { page = "1", ...rest } = await searchParams;
 
   const limit = "10";
-  const page = "1";
 
   const newSearchParams = {
     page,
-    ...(await props.searchParams),
+    ...rest,
     limit,
   }
 

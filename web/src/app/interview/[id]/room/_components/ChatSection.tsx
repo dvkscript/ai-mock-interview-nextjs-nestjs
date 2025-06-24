@@ -141,7 +141,6 @@ const ChatSection: React.FC<ChatSectionProps> = ({
             );
         }
 
-        
         return (
             <div
                 className={`max-w-[75%] rounded-2xl p-3 shadow-sm ${msg.role === "user"
