@@ -60,7 +60,7 @@ export class JobsController {
     }
 
     const res = await this.jobsService.getJobWithQuestion(jobId);
-    
+
     return res;
   }
 
@@ -114,6 +114,7 @@ export class JobsController {
     if (!isUUID(jobId)) {
       throw new NotFoundException()
     }
+
     return await this.jobsService.deleteJob(jobId);
   }
 
@@ -126,5 +127,14 @@ export class JobsController {
     }
     const user = req.user as any;
     return await this.jobsService.reCreateJob(jobId, user.id, user.fullName, body.model)
+  }
+
+  @Post(":jobId/re-started")
+  async reStarted(@Param("jobId") jobId: string) {
+    if (!isUUID(jobId)) {
+      throw new NotFoundException()
+    }
+
+    return await this.jobsService.reStarted(jobId);
   }
 }

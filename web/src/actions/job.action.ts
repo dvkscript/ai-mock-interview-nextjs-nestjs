@@ -187,3 +187,17 @@ export const getJobAnalysis = responseAPI.catchError(
         })
     }
 )
+
+export const jobReStarted = responseAPI.catchError(
+    async (id: string) => {
+        const res = await defaultApi.post(`/jobs/${id}/re-started`)
+
+        if (res.data) {
+            revalidatePath("/")
+        }
+
+        return responseAPI.success({
+            data: res.data
+        });
+    }
+)

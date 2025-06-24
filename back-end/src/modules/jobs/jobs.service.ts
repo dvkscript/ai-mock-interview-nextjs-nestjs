@@ -88,6 +88,57 @@ export class JobsService {
         };
     }
 
+    async reStarted(jobId: string) {
+        const job = await this.jobRepository.findOne({
+            id: jobId
+        });
+
+        if (!job) {
+            throw new NotFoundException("Job not found", {
+                description: "Job not found"
+            })
+        } else if (job.status !== JobStatus.COMPLETED && job.status !== JobStatus.IN_PROGRESS) {
+            throw new BadRequestException("Job is not completed", {
+                description: "Job is not completed"
+            })
+        }
+
+        return await this.databaseService.transaction(async (transaction) => {
+            const jobQuestions = await this.jobQuestionRepository.findAll({
+                where: { jobId },
+                transaction,
+            });
+
+            const jobQuestionIds = jobQuestions.map(q => q.id);
+
+            await Promise.all([
+                this.jobRepository.update({
+                    id: jobId
+                }, {
+                    status: JobStatus.NOT_STARTED,
+                    progressAnswer: 0,
+                    averageScore: 0
+                }, {
+                    transaction
+                }),
+                this.jobQuestionAnswerRepository.delete({
+                    jobQuestionId: jobQuestionIds
+                }, {
+                    transaction
+                }),
+                this.jobFeedbackRepository.delete({
+                    jobId: jobId
+                }, {
+                    transaction
+                })
+            ]);
+
+            return {
+                id: jobId
+            }
+        })
+    }
+
 
     async getJobWithQuestion(id: string): Promise<FindJobQuestionResponse> {
         const job = await this.jobRepository.getJobQuestions(id);

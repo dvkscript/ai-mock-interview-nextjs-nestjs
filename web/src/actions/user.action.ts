@@ -80,8 +80,3 @@ export const updateProfile = responseAPI.catchError(
         return responseAPI.success(res);
     }
 )
-
-export const getUserTest = responseAPI.catchError(async () => {
-    const res= await defaultApi.patch("/user/profile");
-    return responseAPI.success(res);
-})

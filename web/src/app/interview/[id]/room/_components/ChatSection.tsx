@@ -8,6 +8,7 @@ import { Message } from "../types";
 import { Button } from "@/components/ui/button";
 import { useUserStore } from "@/stores/userStore";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import SpeechRecognition from 'react-speech-recognition';
 
 interface ChatSectionProps {
     interviewStatus: "waiting" | "in-progress" | "completed";
@@ -20,6 +21,8 @@ interface ChatSectionProps {
     isStarted: boolean;
     setSpeechToText: (text: string[]) => void;
     speechToText: string[];
+    setIsMuted: React.Dispatch<React.SetStateAction<boolean>>;
+    isMuted: boolean;
 }
 
 const ChatSection: React.FC<ChatSectionProps> = ({
@@ -31,6 +34,8 @@ const ChatSection: React.FC<ChatSectionProps> = ({
     setIsSpeaking,
     setSpeechToText,
     speechToText,
+    setIsMuted,
+    isMuted,
 }) => {
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const messagesRef = useRef<HTMLDivElement>(null);
@@ -64,36 +69,45 @@ const ChatSection: React.FC<ChatSectionProps> = ({
         }
     );
 
-    const formAction = useCallback(async (formData: FormData) => {
-        if (!formRef.current) return;
-        const text = (formData.get("message"))?.toString()
-            .trim()
-            .replace(/\n+/g, "\n")
-            .replace(/ {2,}/g, " ");
+    const formAction = useCallback(async () => {
+        if (!formRef.current || !textareaRef.current) return;
 
+        const text = textareaRef.current.value.trim();
         if (!text) return;
-        formRef.current.reset();
-        setSpeechToText([])
 
-        addOptimisticMessage(text);
-        await sendMessage({
-            text,
+        // Dừng ghi âm chỉ khi mic đang bật
+        if (isMuted) {
+            try {
+                await SpeechRecognition.stopListening();
+            } catch (e) {
+                console.error('Error stopping speech recognition:', e);
+            }
+            startTransition(() => {
+                setIsMuted(false);
+                setSpeechToText([]);
+            });
+        }
+
+        // Reset form và speech to text
+        formRef.current.reset();
+
+        // Gửi message
+        startTransition(() => {
+            addOptimisticMessage(text);
         });
-    }, [
-        addOptimisticMessage,
-        sendMessage,
-        setSpeechToText
-    ])
+        await sendMessage({ text });
+    }, [addOptimisticMessage, sendMessage, setSpeechToText, setIsMuted, isMuted, startTransition]);
+
+    const handleSubmit = useCallback((e: React.FormEvent) => {
+        e.preventDefault();
+        formAction();
+    }, [formAction]);
 
     const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-        startTransition(async () => {
-            if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                const formData = new FormData();
-                formData.append("message", textareaRef.current?.value || "");
-                await formAction(formData);
-            }
-        })
+        if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            formAction();
+        }
     }, [formAction]);
 
     useEffect(() => {
@@ -107,9 +121,10 @@ const ChatSection: React.FC<ChatSectionProps> = ({
     ])
 
     useEffect(() => {
-        const textareaEl = textareaRef.current
+        const textareaEl = textareaRef.current;
         if (textareaEl && speechToText.length > 0) {
-            textareaEl.value = textareaEl.value.trimEnd() + ' ' + speechToText[speechToText.length - 1];
+            const newText = speechToText[speechToText.length - 1];
+            textareaEl.value = textareaEl.value.trimEnd() + ' ' + newText;
         }
     }, [speechToText])
 
@@ -214,7 +229,7 @@ const ChatSection: React.FC<ChatSectionProps> = ({
             <div className="border-t border-gray-200 dark:border-gray-700 p-4 bg-gradient-to-r from-gray-50 to-white dark:from-gray-850 dark:to-gray-800">
                 <form
                     className="flex items-end gap-x-2"
-                    action={formAction}
+                    onSubmit={handleSubmit}
                     ref={formRef}
                 >
                     <Textarea

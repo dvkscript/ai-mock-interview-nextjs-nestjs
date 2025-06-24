@@ -16,6 +16,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { useRouter } from "next-nprogress-bar";
 import ClientOnly from "@/components/common/ClientOnly";
 import { useUserStore } from "@/stores/userStore";
+import SpeechRecognition from 'react-speech-recognition';
 
 interface Interviewer {
     name: string;
@@ -70,7 +71,7 @@ const RoomDetailClient: React.FC<RoomDetailClientProps> = ({
 
     // Interview states
     const [interviewStatus, setInterviewStatus] = useState<"waiting" | "in-progress" | "completed">("waiting");
-    const [interviewer, 
+    const [interviewer,
         // setInterviewer
     ] = useState<Interviewer>(interviewers["default"]);
     const [isStarted, setStarted] = useState(false);
@@ -80,8 +81,8 @@ const RoomDetailClient: React.FC<RoomDetailClientProps> = ({
     const [isVideoOff, setIsVideoOff] = useState(false);
     const [isMuted, setIsMuted] = useState(false);
     const [isSpeaking, setIsSpeaking] = useState(false);
-    const [isUserSpeaking, setIsUserSpeaking] = useState(false);
-    const [elapsedTime, 
+    const [, setIsUserSpeaking] = useState(false);
+    const [elapsedTime,
         // setElapsedTime
     ] = useState(0);
 
@@ -230,7 +231,7 @@ const RoomDetailClient: React.FC<RoomDetailClientProps> = ({
             setIsProcessing(false);
         })();
     }, [messageLast, jobs.questions, sendMessage, isStarted, isProcessing]);
-    
+
     useEffect(() => {
         if (!currentAudioId) return;
 
@@ -250,21 +251,42 @@ const RoomDetailClient: React.FC<RoomDetailClientProps> = ({
         (async () => {
             try {
                 setIsLoading(true);
+
+                // Dừng mic nếu đang bật
+                if (isMuted) {
+                    try {
+                        await SpeechRecognition.stopListening();
+                    } catch (e) {
+                        console.error('Error stopping speech recognition:', e);
+                    }
+                    setIsMuted(false);
+                }
+
+                // Gọi API feedback
                 const res = await feedback(jobs.id);
 
                 if (!res.data?.id) {
-                    return toast.error(res.message);
+                    toast.error(res.message);
+                    return;
                 }
 
+                // Cập nhật state theo thứ tự
                 setFeedbackId(res.data.id);
-                setShowFeedbackModal(true);
-            } catch {
+                setStarted(false);
+
+                // Đảm bảo modal được hiển thị sau khi các state khác đã được cập nhật
+                setTimeout(() => {
+                    setShowFeedbackModal(true);
+                }, 100);
+
+            } catch (error) {
+                console.error("Error creating feedback:", error);
                 toast.error("Có lỗi xảy ra khi tạo feedback");
             } finally {
                 setIsLoading(false);
             }
         })()
-    }, [messageLast, jobs.questions, jobs.id, jobs.status, maxQuestionIndex])
+    }, [messageLast, jobs.questions, jobs.id, jobs.status, maxQuestionIndex, isMuted]);
 
     const handleGoToFeedback = () => {
         if (feedbackId) {
@@ -533,8 +555,6 @@ const RoomDetailClient: React.FC<RoomDetailClientProps> = ({
                                 isMuted={isMuted}
                                 setIsMuted={setIsMuted}
                                 isStarted={isStarted}
-                                isProcessing={isProcessing}
-                                isUserSpeaking={isUserSpeaking}
                                 setIsUserSpeaking={setIsUserSpeaking}
                                 isDosabled={jobs.status === JobStatus.COMPLETED}
                             />
@@ -608,6 +628,8 @@ const RoomDetailClient: React.FC<RoomDetailClientProps> = ({
                         isStarted={isStarted}
                         setSpeechToText={setSpeechToText}
                         speechToText={speechToText}
+                        setIsMuted={setIsMuted}
+                        isMuted={isMuted}
                     />
                 </div>
             </div>
