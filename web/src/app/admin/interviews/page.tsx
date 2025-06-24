@@ -1,5 +1,5 @@
 import { getAdminJobs } from "@/actions/admin.action";
-import InterviewClient from "./InterviewClient";
+// import InterviewClient from "./InterviewClient";
 
 interface InterviewsPageProps {
   searchParams: Promise<{
@@ -24,7 +24,8 @@ export default async function InterviewsPage({ searchParams }: InterviewsPagePro
     throw new Error(res.status.toString())
   }
 
-  return (
-    <InterviewClient data={res.data} limit={limit} />
-  )
+  return <>test</>
+  // return (
+  //   <InterviewClient data={res.data} limit={limit} />
+  // )
 };
